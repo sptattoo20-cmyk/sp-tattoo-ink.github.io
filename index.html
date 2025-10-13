@@ -132,7 +132,7 @@
     </section>
 
     <!-- Booking Section -->
-    <section id="booking" class="py-20 bg-gray-800">
+    <section id="bookingFrom" action="https://formspree.io/f/mnngozae" method="POST" class="py-20 bg-gray-800">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-4xl font-bold text-center mb-16 text-purple-400">Zakaži Termin</h2>
             
@@ -363,13 +363,14 @@
 
         // Booking form submission
         document.getElementById('bookingForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
             if (!selectedDate) {
+                e.preventDefault();
                 alert('Molimo izaberite datum iz kalendara.');
                 return;
             }
-            
+            document.getElementById('selectedDate').value = new Date(selectedDate).toLocaleDateString('sr-RS');
+            document.getElementById('hiddenDate').value = selectedDate;      
+        });
             const formData = {
                 fullName: document.getElementById('fullName').value,
                 phone: document.getElementById('phone').value,
