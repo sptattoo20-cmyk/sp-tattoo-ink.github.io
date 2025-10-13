@@ -270,27 +270,33 @@
 <!-- EmailJS biblioteka -->
 <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 
+</section>
+<!-- EmailJS biblioteka -->
+<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 <script>
-    // Inicijalizacija EmailJS
-    emailjs.init("jqIOVZLJJvDFs6I2d"); // ubaci svoj Public Key
+    emailjs.init("jqIOVZLJJvDFs6I2d"); // Public Key
 
-    // Pronalazi formu po ID-u
-    const form = document.getElementById('booking-form');
+    const form = document.getElementById('bookingForm');
 
-    // Listener koji šalje mejl kada se forma pošalje
     form.addEventListener('submit', function(event) {
-        event.preventDefault(); // sprečava refresh stranice
+        event.preventDefault();
+
+        // Pre slanja, ažuriramo hidden polja
+        document.getElementById('totalPriceHidden').value = document.getElementById('totalPrice').textContent;
+        document.getElementById('depositHidden').value = document.getElementById('depositAmount').textContent;
+        document.getElementById('dateHidden').value = document.getElementById('dateDisplay').textContent;
 
         emailjs.sendForm('service_sptattoo', 'template_sptattoo', this)
         .then(() => {
-            alert('Zahtev je poslat! Hvala što ste zakazali termin.');
-            form.reset(); // resetuje formu posle slanja
+            alert('✅ Zahtev je poslat! Hvala što ste zakazali termin.');
+            form.reset();
         }, (error) => {
-            alert('Došlo je do greške. Pokušajte ponovo.');
-            console.error(error); // loguje grešku u konzoli
+            alert('❌ Došlo je do greške. Pokušajte ponovo.');
+            console.error(error);
         });
     });
 </script>
+
     <!-- Contact Section -->
     <section id="contact" class="py-20 bg-gray-900">
         <div class="max-w-4xl mx-auto px-4">
