@@ -296,7 +296,50 @@
         });
     });
 </script>
+<!-- Firebase biblioteke -->
+<script type="module">
+  // Import Firebase modula
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
+  // Tvoj Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyDmCJL8QSAifNUMib_KZ4jj14bLaAELaT",
+    authDomain: "adminsptattoo.firebaseapp.com",
+    projectId: "adminsptattoo",
+    storageBucket: "adminsptattoo.firebasestorage.app",
+    messagingSenderId: "1027852466595",
+    appId: "1:1027852466595:web:394719d82a21b397a80216"
+  };
+
+  // Inicijalizacija Firebase aplikacije
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Kada korisnik pošalje formu
+  document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = {
+      first_name: document.getElementById('firstName').value,
+      last_name: document.getElementById('lastName').value,
+      email: document.getElementById('email').value,
+      phone: document.getElementById('phone').value,
+      artist: document.getElementById('artist').value,
+      session_type: document.getElementById('sessionType').value,
+      description: document.getElementById('description').value,
+      date: document.getElementById('dateDisplay').textContent,
+      timestamp: new Date()
+    };
+
+    try {
+      await addDoc(collection(db, "bookings"), formData);
+      console.log("✅ Sačuvano u Firestore!");
+    } catch (error) {
+      console.error("❌ Greška pri čuvanju u Firebase:", error);
+    }
+  });
+</script>
     <!-- Contact Section -->
     <section id="contact" class="py-20 bg-gray-900">
         <div class="max-w-4xl mx-auto px-4">
