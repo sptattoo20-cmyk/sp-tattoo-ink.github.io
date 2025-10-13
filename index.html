@@ -1,171 +1,287 @@
 <!DOCTYPE html>
 <html lang="sr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SP Tattoo Booking</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SP Tattoo Ink - Zakazivanje</title>
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- EmailJS -->
   <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+
+  <style>
+    /* Small extra styles for calendar */
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+    .calendar-day { aspect-ratio: 1/1; display:flex; align-items:center; justify-content:center; border-radius:0.5rem; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease; font-weight:600; }
+    .calendar-day:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.45); }
+    .available { background: #10b981; color: #fff; }
+    .pending { background: #ef4444; color: #fff; } /* pending = red */
+    .confirmed { background: #047857; color: #fff; } /* confirmed = green */
+    .rejected { background: #6b7280; color: #fff; } /* rejected = gray */
+    .selected { outline: 3px solid rgba(59,130,246,0.9); }
+    .tattoo-icon { background: linear-gradient(45deg,#8b5cf6,#ec4899); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  </style>
 </head>
 <body class="bg-gray-900 text-white">
 
-<!-- Booking Section -->
-<section id="booking" class="container mx-auto px-6 py-10">
-  <h1 class="text-3xl font-bold mb-6 text-center">Rezervacija Termina</h1>
-  <form id="bookingForm" class="bg-gray-800 rounded-lg p-8 space-y-6">
-    <div class="grid md:grid-cols-2 gap-6">
-      <div>
-        <!-- Calendar -->
-        <div class="bg-gray-900 rounded-lg p-6 mb-8">
-          <div class="flex justify-between items-center mb-6">
-            <button type="button" onclick="changeMonth(-1)" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">‹</button>
-            <h3 id="currentMonth" class="text-xl font-bold"></h3>
-            <button type="button" onclick="changeMonth(1)" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">›</button>
+  <!-- NAV -->
+  <nav class="bg-black/80 fixed w-full z-50 border-b border-purple-600/20">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl tattoo-icon">⚡</span>
+        <span class="text-lg font-bold">SP Tattoo Ink</span>
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="#home" class="hidden md:inline hover:text-purple-300">Početna</a>
+        <a href="#artists" class="hidden md:inline hover:text-purple-300">Umetnici</a>
+        <a href="#booking" class="hidden md:inline hover:text-purple-300">Zakazivanje</a>
+        <a href="#contact" class="hidden md:inline hover:text-purple-300">Kontakt</a>
+        <button onclick="showAdminLogin()" class="text-sm bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded">Admin</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header id="home" class="min-h-screen flex items-center justify-center bg-[url('https://images.unsplash.com/photo-1543852786-1cf6624b9987?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=')] bg-cover bg-center relative">
+    <div class="absolute inset-0 bg-black/60"></div>
+    <div class="relative z-10 text-center px-6">
+      <h1 class="text-6xl md:text-8xl font-extrabold tattoo-icon leading-tight">SP TATTOO INK</h1>
+      <p class="mt-6 text-xl text-gray-300 max-w-2xl mx-auto">Umetnost koja traje zauvek — profesionalni tattoo artisti, personalizovani pristup.</p>
+      <div class="mt-8 flex justify-center gap-4">
+        <button onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})" class="bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-3 rounded-full font-semibold hover:scale-105">🎨 Zakažite Termin</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ARTISTS -->
+  <section id="artists" class="py-16 bg-gray-800">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold text-center tattoo-icon mb-8">Naši Umetnici</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-gray-900 rounded-lg p-6 text-center">
+          <div class="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl font-bold">S</div>
+          <h3 class="text-xl font-semibold">Stefan</h3>
+          <p class="text-gray-400 mt-2">Realizam & portreti — precizno i detaljno.</p>
+        </div>
+        <div class="bg-gray-900 rounded-lg p-6 text-center">
+          <div class="w-24 h-24 bg-gradient-to-br from-pink-500 to-red-500 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl font-bold">E</div>
+          <h3 class="text-xl font-semibold">Emilija</h3>
+          <p class="text-gray-400 mt-2">Fine line i geometrija.</p>
+        </div>
+        <div class="bg-gray-900 rounded-lg p-6 text-center">
+          <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl font-bold">J</div>
+          <h3 class="text-xl font-semibold">Josipa</h3>
+          <p class="text-gray-400 mt-2">Tradicionalni i neo-tradicionalni stilovi.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICES -->
+  <section id="prices" class="py-12 bg-gray-900">
+    <div class="max-w-4xl mx-auto px-6">
+      <h2 class="text-3xl font-bold text-center tattoo-icon mb-8">Cenovnik</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-gray-800 rounded-lg p-6 text-center">
+          <h4 class="font-bold text-green-400">Small Tattoo</h4>
+          <div class="text-3xl font-extrabold my-2">150€</div>
+          <p class="text-sm text-gray-400">Do 2 sata — Depozit 100€</p>
+        </div>
+        <div class="bg-gray-800 rounded-lg p-6 text-center">
+          <h4 class="font-bold text-purple-400">Half Day</h4>
+          <div class="text-3xl font-extrabold my-2">300€</div>
+          <p class="text-sm text-gray-400">Do 3 sata — Depozit 150€</p>
+        </div>
+        <div class="bg-gray-800 rounded-lg p-6 text-center">
+          <h4 class="font-bold text-pink-400">Full Day</h4>
+          <div class="text-3xl font-extrabold my-2">600€</div>
+          <p class="text-sm text-gray-400">Do 6 sati — Depozit 250€</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOOKING -->
+  <section id="booking" class="py-16 bg-gray-950">
+    <div class="max-w-6xl mx-auto px-6">
+      <h2 class="text-3xl font-bold text-center tattoo-icon mb-6">Zakazivanje termina</h2>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- LEFT: calendar + legend + artist select -->
+        <div>
+          <div class="bg-gray-900 rounded-lg p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+              <button class="bg-purple-600 px-3 py-1 rounded" onclick="changeMonth(-1)">‹</button>
+              <div id="currentMonth" class="font-semibold"></div>
+              <button class="bg-purple-600 px-3 py-1 rounded" onclick="changeMonth(1)">›</button>
+            </div>
+
+            <div class="calendar-grid mb-4 text-sm">
+              <div class="text-center font-semibold p-2">Ned</div>
+              <div class="text-center font-semibold p-2">Pon</div>
+              <div class="text-center font-semibold p-2">Uto</div>
+              <div class="text-center font-semibold p-2">Sre</div>
+              <div class="text-center font-semibold p-2">Čet</div>
+              <div class="text-center font-semibold p-2">Pet</div>
+              <div class="text-center font-semibold p-2">Sub</div>
+            </div>
+
+            <div id="calendarDays" class="calendar-grid mb-4"></div>
+
+            <div class="flex flex-wrap gap-3 justify-center text-sm">
+              <div class="flex items-center gap-2"><span class="w-3 h-3 bg-green-500 rounded"></span><span>Dostupno</span></div>
+              <div class="flex items-center gap-2"><span class="w-3 h-3 bg-red-500 rounded"></span><span>Na čekanju</span></div>
+              <div class="flex items-center gap-2"><span class="w-3 h-3 bg-green-700 rounded"></span><span>Potvrđeno</span></div>
+              <div class="flex items-center gap-2"><span class="w-3 h-3 bg-gray-500 rounded"></span><span>Odbijeno</span></div>
+            </div>
           </div>
 
-          <div class="grid grid-cols-7 text-center font-semibold mb-4">
-            <div>Ned</div><div>Pon</div><div>Uto</div><div>Sre</div><div>Čet</div><div>Pet</div><div>Sub</div>
-          </div>
-
-          <div id="calendarDays" class="grid grid-cols-7 gap-2"></div>
-
-          <div class="flex justify-center space-x-6 mt-6 text-sm">
-            <div class="flex items-center space-x-2">
-              <div class="w-4 h-4 bg-green-500 rounded"></div>
-              <span>Dostupno</span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-4 h-4 bg-red-500 rounded"></div>
-              <span>Zauzeto</span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-4 h-4 bg-blue-500 rounded"></div>
-              <span>Izabrano</span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-4 h-4 bg-gray-500 rounded"></div>
-              <span>Odbijeno</span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-4 h-4 bg-green-700 rounded"></div>
-              <span>Potvrđeno</span>
-            </div>
-          </div>
+          <label class="block text-sm font-medium mb-2">Umetnik</label>
+          <select id="artistSelect" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 mb-4">
+            <option value="">Izaberite umetnika</option>
+            <option value="Stefan">Stefan</option>
+            <option value="Emilija">Emilija</option>
+            <option value="Josipa">Josipa</option>
+          </select>
         </div>
 
-        <label class="block text-sm font-medium mb-2">Umetnik</label>
-        <select id="artist" name="artist" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
-          <option value="">Izaberite umetnika</option>
-          <option value="Stefan">Stefan</option>
-          <option value="Emilija">Emilija</option>
-          <option value="Josipa">Josipa</option>
-        </select>
-      </div>
+        <!-- RIGHT: form -->
+        <div>
+          <form id="bookingForm" class="bg-gray-900 rounded-lg p-6 space-y-4">
+            <div class="grid md:grid-cols-2 gap-3">
+              <div>
+                <label class="text-sm">Ime</label>
+                <input id="firstName" required class="w-full mt-1 px-3 py-2 rounded bg-gray-800 border border-gray-700" />
+              </div>
+              <div>
+                <label class="text-sm">Prezime</label>
+                <input id="lastName" required class="w-full mt-1 px-3 py-2 rounded bg-gray-800 border border-gray-700" />
+              </div>
+            </div>
 
-      <div>
-        <label class="block text-sm font-medium mb-2">Tip termina</label>
-        <select id="sessionType" name="session_type" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none" onchange="updatePrice()">
-          <option value="">Izaberite tip</option>
-          <option value="small" data-price="150" data-deposit="100">Small Tattoo - 150€</option>
-          <option value="half" data-price="300" data-deposit="150">Half Day - 300€</option>
-          <option value="full" data-price="600" data-deposit="250">Full Day - 600€</option>
-        </select>
+            <div class="grid md:grid-cols-2 gap-3">
+              <div>
+                <label class="text-sm">Telefon</label>
+                <input id="phone" required class="w-full mt-1 px-3 py-2 rounded bg-gray-800 border border-gray-700" />
+              </div>
+              <div>
+                <label class="text-sm">Email</label>
+                <input id="email" type="email" required class="w-full mt-1 px-3 py-2 rounded bg-gray-800 border border-gray-700" />
+              </div>
+            </div>
 
-        <div class="mt-6">
-          <label class="block text-sm font-medium mb-2">Ime</label>
-          <input type="text" id="firstName" name="first_name" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3">
+            <div>
+              <label class="text-sm">Tip termina</label>
+              <select id="sessionType" required class="w-full mt-1 px-3 py-2 rounded bg-gray-800 border border-gray-700" onchange="updatePrice()">
+                <option value="">Izaberite tip</option>
+                <option value="Small Tattoo" data-price="150" data-deposit="100">Small Tattoo - 150€</option>
+                <option value="Half Day" data-price="300" data-deposit="150">Half Day - 300€</option>
+                <option value="Full Day" data-price="600" data-deposit="250">Full Day - 600€</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-sm">Opis tetovaže</label>
+              <textarea id="description" rows="3" class="w-full mt-1 px-3 py-2 rounded bg-gray-800 border border-gray-700"></textarea>
+            </div>
+
+            <div id="priceInfo" class="hidden bg-gray-800 p-3 rounded">
+              <div class="flex justify-between"><span>Ukupna cena:</span><span id="totalPrice" class="font-bold"></span></div>
+              <div class="flex justify-between mt-2"><span>Depozit:</span><span id="depositAmount" class="font-bold text-purple-300"></span></div>
+            </div>
+
+            <div id="selectedDateBox" class="hidden text-sm text-blue-300">
+              Izabrani datum: <span id="dateDisplay" class="font-semibold"></span>
+            </div>
+
+            <div class="flex gap-3">
+              <button id="submitBtn" type="submit" class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 py-2 rounded font-semibold">Pošaljite zahtev</button>
+              <a id="whatsappBtn" target="_blank" class="px-4 py-2 bg-green-600 rounded flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M20.52 3.48C18.84 1.8 16.5 1 14 1 7.37 1 2 6.37 2 13c0 2.13.6 4.15 1.74 5.89L2 23l3.35-1.1C7.22 22.19 9.54 23 12 23c6.63 0 12-5.37 12-12 0-2.5-.8-4.84-2.48-6.52zM12 21.5c-2.07 0-3.98-.47-5.6-1.3l-.39-.22L5 20l.99-1.02-.25-.23C5.57 17.5 5 15.3 5 13c0-3.86 3.14-7 7-7 3.86 0 7 3.14 7 7 0 3.86-3.14 7-7 7z"/><path d="M17.2 14.1c-.3-.15-1.73-.86-2-.96-.27-.12-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.48-1.77-1.65-2.07-.17-.3-.02-.46.13-.61.14-.14.3-.36.45-.54.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.6-.92-2.19-.24-.58-.48-.5-.67-.5-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.06 2.87 1.21 3.07.15.2 2.1 3.28 5.08 4.56 2.98 1.27 3.46.98 4.09.92.63-.06 2.04-.83 2.33-1.63.3-.8.3-1.48.21-1.63-.08-.15-.27-.24-.57-.39z"/></svg>
+                WhatsApp
+              </a>
+            </div>
+
+          </form>
         </div>
-
-        <div class="mt-6">
-          <label class="block text-sm font-medium mb-2">Prezime</label>
-          <input type="text" id="lastName" name="last_name" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3">
-        </div>
-
-        <div class="mt-6">
-          <label class="block text-sm font-medium mb-2">Broj telefona</label>
-          <input type="tel" id="phone" name="phone" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3">
-        </div>
-
-        <div class="mt-6">
-          <label class="block text-sm font-medium mb-2">Email</label>
-          <input type="email" id="email" name="email" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3">
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium mb-2">Opis tetovaže</label>
-      <textarea id="description" name="description" required rows="4" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3" placeholder="Opišite tetovažu..."></textarea>
-    </div>
-
-    <div id="priceInfo" class="bg-gray-800 rounded-lg p-4 hidden">
-      <div class="flex justify-between items-center">
-        <span>Ukupna cena:</span>
-        <span id="totalPrice" class="font-bold text-xl"></span>
-      </div>
-      <div class="flex justify-between items-center mt-2">
-        <span>Depozit:</span>
-        <span id="depositAmount" class="font-bold text-purple-400"></span>
       </div>
     </div>
+  </section>
 
-    <div id="selectedDate" class="text-center text-purple-400 hidden">
-      <p>Izabrani datum: <span id="dateDisplay"></span></p>
-    </div>
-
-    <!-- Hidden fields -->
-    <input type="hidden" id="totalPriceHidden" name="total_price">
-    <input type="hidden" id="depositHidden" name="deposit">
-    <input type="hidden" id="dateHidden" name="date">
-
-    <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 py-4 rounded-lg font-semibold text-lg">
-      Pošaljite Zahtev za Termin
-    </button>
-  </form>
-</section>
-
-<!-- Admin Panel -->
-<section id="adminPanel" class="container mx-auto px-6 py-10">
-  <h1 class="text-3xl font-bold mb-6 text-center">Admin Panel - Potvrda Termina</h1>
-  <div id="requestsList" class="space-y-4"></div>
-</section>
-
-<!-- Info Table -->
-<section id="info" class="bg-gray-800 text-white mt-10 py-8">
-  <div class="container mx-auto px-6 grid md:grid-cols-4 gap-6 text-center">
-    <div>
-      <h3 class="font-bold text-lg mb-2">Adresa</h3>
-      <p>Ulica 123, Beograd</p>
-    </div>
-    <div>
-      <h3 class="font-bold text-lg mb-2">Radno vreme</h3>
-      <p>Pon-Pet: 10:00 - 20:00</p>
-      <p>Sub: 10:00 - 15:00</p>
-    </div>
-    <div>
-      <h3 class="font-bold text-lg mb-2">WhatsApp</h3>
-      <p><a href="https://wa.me/381601234567" target="_blank" class="text-green-400 hover:underline">+381 60 1234567</a></p>
-    </div>
-    <div>
-      <h3 class="font-bold text-lg mb-2">Instagram</h3>
-      <p><a href="https://instagram.com/sptattoo" target="_blank" class="text-pink-400 hover:underline">@sptattoo</a></p>
+  <!-- ADMIN LOGIN MODAL -->
+  <div id="adminLoginModal" class="fixed inset-0 bg-black/70 hidden z-50 flex items-center justify-center">
+    <div class="bg-gray-900 rounded-lg p-6 w-96">
+      <h3 class="text-xl font-semibold mb-4">Admin prijava</h3>
+      <input id="adminUser" placeholder="Korisničko ime" class="w-full mb-3 px-3 py-2 rounded bg-gray-800 border border-gray-700" />
+      <input id="adminPass" type="password" placeholder="Lozinka" class="w-full mb-4 px-3 py-2 rounded bg-gray-800 border border-gray-700" />
+      <div class="flex gap-3">
+        <button onclick="loginAdmin()" class="flex-1 bg-green-600 py-2 rounded">Prijavi se</button>
+        <button onclick="closeAdminLogin()" class="flex-1 bg-red-600 py-2 rounded">Otkaži</button>
+      </div>
+      <p id="loginError" class="text-red-400 mt-3 hidden">Pogrešno korisničko ime ili lozinka.</p>
     </div>
   </div>
-</section>
 
-<script>
-  emailjs.init("jqIOVZLJJvDFs6I2d"); // Tvoj EmailJS userID
-</script>
+  <!-- ADMIN PANEL -->
+  <section id="adminPanel" class="fixed inset-0 bg-black/80 hidden z-50 overflow-auto">
+    <div class="max-w-4xl mx-auto mt-12 bg-gray-900 rounded-lg p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-2xl font-bold">Admin Panel - Zahtevi</h3>
+        <div class="flex gap-2">
+          <button onclick="logoutAdmin()" class="bg-red-600 px-3 py-2 rounded">Odjavi se</button>
+          <button onclick="refreshRequests()" class="bg-purple-600 px-3 py-2 rounded">Osveži</button>
+        </div>
+      </div>
 
-<script type="module">
+      <div id="adminRequests" class="space-y-4">
+        <!-- dynamic -->
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT / FOOTER -->
+  <footer id="contact" class="py-12 bg-gray-900">
+    <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-4 gap-6 text-center">
+      <div>
+        <h4 class="font-bold">Adresa</h4>
+        <p class="text-gray-400">Knez Mihailova 15, Beograd</p>
+      </div>
+      <div>
+        <h4 class="font-bold">Radno vreme</h4>
+        <p class="text-gray-400">Pon-Pet: 10:00 - 20:00<br>Sub: 10:00 - 15:00</p>
+      </div>
+      <div>
+        <h4 class="font-bold">WhatsApp</h4>
+        <p><a href="https://wa.me/381601234567" target="_blank" class="text-green-400">+381 60 1234567</a></p>
+      </div>
+      <div>
+        <h4 class="font-bold">Instagram</h4>
+        <p><a href="https://instagram.com/sptattoo" target="_blank" class="text-pink-400">@sptattoo</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS: EmailJS init, Firebase + app logic -->
+  <script>
+    // EmailJS public key (tvoj)
+    emailjs.init("jqIOVZLJJvDFs6I2d");
+  </script>
+
+  <script type="module">
+  // Firebase + Firestore imports (v10)
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+  import {
+    getFirestore, collection, addDoc, getDocs, updateDoc, doc,
+    onSnapshot, query, orderBy
+  } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
+  // Firebase config - proveri da je ovo tvoj projekat
   const firebaseConfig = {
     apiKey: "AIzaSyDmCJL8QSAifNUMib_KZ4jj14bLaAELaT",
     authDomain: "adminsptattoo.firebaseapp.com",
     projectId: "adminsptattoo",
-    storageBucket: "adminsptattoo.firebasestorage.app",
+    storageBucket: "adminsptattoo.appspot.com",
     messagingSenderId: "1027852466595",
     appId: "1:1027852466595:web:394719d82a21b397a80216"
   };
@@ -173,150 +289,322 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+  // ---------- Admin credentials (staticki) ----------
+  // PROMENI OVO pre produkcije na jacu lozinku
+  const ADMIN_USER = "admin";
+  const ADMIN_PASS = "TvojaLozinka123"; // change this to secure password
+
+  // ---------- Calendar state ----------
   let currentDate = new Date();
   let selectedDate = null;
-  let bookedDates = new Map();
 
-  async function loadBookedDates(){
-    bookedDates.clear();
-    const querySnapshot = await getDocs(collection(db,"bookings"));
-    querySnapshot.forEach(doc => {
-      const data = doc.data();
-      if(data.date) bookedDates.set(data.date,data.status);
+  // map dateStr -> status (pending/confirmed/rejected)
+  let bookingStatusMap = new Map();
+
+  const calendarDaysEl = document.getElementById('calendarDays');
+  const currentMonthEl = document.getElementById('currentMonth');
+
+  async function loadBookingStatuses() {
+    bookingStatusMap.clear();
+    const q = query(collection(db, "bookings"));
+    const snap = await getDocs(q);
+    snap.forEach(docSnap => {
+      const d = docSnap.data();
+      if (d && d.date) bookingStatusMap.set(d.date, d.status || 'pending');
     });
   }
 
   async function renderCalendar(){
-    await loadBookedDates();
+    await loadBookingStatuses();
+    calendarDaysEl.innerHTML = '';
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    document.getElementById('currentMonth').textContent = currentDate.toLocaleString('sr-RS', {month:'long', year:'numeric'});
-    const calendarDays = document.getElementById('calendarDays');
-    calendarDays.innerHTML="";
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    const firstDay = new Date(year,month,1).getDay();
-    const daysInMonth = new Date(year,month+1,0).getDate();
+    currentMonthEl.textContent = currentDate.toLocaleString('sr-RS', { month: 'long', year: 'numeric' });
 
-    for(let i=0;i<firstDay;i++){ calendarDays.appendChild(document.createElement('div')); }
+    // empty placeholders
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement('div');
+      calendarDaysEl.appendChild(empty);
+    }
 
-    for(let d=1; d<=daysInMonth; d++){
-      const dayEl=document.createElement('div');
-      const dateStr = new Date(year,month,d).toISOString().split('T')[0];
-      dayEl.classList.add('day','bg-gray-800','p-2','text-center','rounded');
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateObj = new Date(year, month, d);
+      const dateStr = dateObj.toISOString().split('T')[0];
+      const el = document.createElement('div');
+      el.className = 'calendar-day';
+      el.textContent = d;
 
-      dayEl.textContent=d;
+      const status = bookingStatusMap.get(dateStr);
+      if (status === 'confirmed') el.classList.add('confirmed');
+      else if (status === 'pending') el.classList.add('pending');
+      else if (status === 'rejected') el.classList.add('rejected');
+      else el.classList.add('available');
 
-      const status = bookedDates.get(dateStr);
-      if(status==='confirmed'){dayEl.classList.add('bg-green-700');}
-      else if(status==='pending'){dayEl.classList.add('bg-red-500');}
-      else if(status==='rejected'){dayEl.classList.add('bg-gray-500');}
-      else{dayEl.addEventListener('click',()=>selectDate(dateStr,dayEl));
-            dayEl.classList.add('available','hover:bg-blue-700','cursor-pointer');}
-      
-      calendarDays.appendChild(dayEl);
+      if (status === undefined) {
+        // available - allow selecting
+        el.addEventListener('click', () => selectDate(dateStr, el));
+      } else if (status === 'pending') {
+        // allow selecting too (if you want to request same day while pending exists, you may disable)
+        el.addEventListener('click', () => selectDate(dateStr, el));
+      } else {
+        // if confirmed/rejected, still show but prevent selection
+        el.style.cursor = 'not-allowed';
+      }
+
+      calendarDaysEl.appendChild(el);
     }
   }
 
-  function changeMonth(step){ currentDate.setMonth(currentDate.getMonth()+step); renderCalendar(); }
-
-  function selectDate(dateStr,el){
-    document.querySelectorAll('.selected').forEach(x=>{x.classList.remove('selected'); x.classList.add('available');});
-    el.classList.remove('available'); el.classList.add('selected');
-    selectedDate=dateStr;
-    document.getElementById('selectedDate').classList.remove('hidden');
-    document.getElementById('dateDisplay').textContent=new Date(dateStr).toLocaleDateString('sr-RS');
+  function changeMonth(offset) {
+    currentDate.setMonth(currentDate.getMonth() + offset);
+    renderCalendar();
   }
 
-  window.updatePrice=function(){
-    const select=document.getElementById('sessionType');
-    const opt=select.options[select.selectedIndex];
-    if(opt.value){
-      const price=opt.dataset.price;
-      const deposit=opt.dataset.deposit;
-      document.getElementById('totalPrice').textContent=price+'€';
-      document.getElementById('depositAmount').textContent=deposit+'€';
-      document.getElementById('priceInfo').classList.remove('hidden');
-    }else{document.getElementById('priceInfo').classList.add('hidden');}
+  function selectDate(dateStr, el) {
+    document.querySelectorAll('.calendar-day').forEach(x => x.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedDate = dateStr;
+    document.getElementById('selectedDateBox').classList.remove('hidden');
+    document.getElementById('dateDisplay').textContent = new Date(dateStr).toLocaleDateString('sr-RS');
+    updateWhatsAppLink();
   }
 
-  async function loadRequests(){
-    const container=document.getElementById('requestsList');
-    container.innerHTML="";
-    const snapshot=await getDocs(collection(db,'bookings'));
-    snapshot.forEach(d=>{
-      const data=d.data();
-      if(data.status==='pending'){
-        const card=document.createElement('div');
-        card.className='bg-gray-800 p-4 rounded flex justify-between items-center';
-        card.innerHTML=`
-          <div>
-            <p><strong>${data.first_name} ${data.last_name}</strong></p>
-            <p>${data.date} - ${data.artist} - ${data.session_type}</p>
-            <p>${data.description}</p>
-          </div>
-          <div class="flex space-x-2">
-            <button class="bg-green-600 px-3 py-1 rounded approve">Potvrdi</button>
-            <button class="bg-red-600 px-3 py-1 rounded reject">Odbij</button>
-          </div>
-        `;
-        card.querySelector('.approve').addEventListener('click',()=>updateStatus(d.id,'confirmed'));
-        card.querySelector('.reject').addEventListener('click',()=>updateStatus(d.id,'rejected'));
-        container.appendChild(card);
+  // price display
+  function updatePrice(){
+    const sel = document.getElementById('sessionType');
+    const opt = sel.selectedOptions[0];
+    if (!opt || !opt.dataset.price) {
+      document.getElementById('priceInfo').classList.add('hidden');
+      return;
+    }
+    document.getElementById('totalPrice').textContent = opt.dataset.price + " €";
+    document.getElementById('depositAmount').textContent = opt.dataset.deposit + " €";
+    document.getElementById('priceInfo').classList.remove('hidden');
+  }
+
+  // WhatsApp button
+  const whatsappBtn = document.getElementById('whatsappBtn');
+  function updateWhatsAppLink(){
+    const first = document.getElementById('firstName').value || '[Ime]';
+    const last = document.getElementById('lastName').value || '[Prezime]';
+    const artist = document.getElementById('artistSelect').value || '[Umetnik]';
+    const date = selectedDate ? new Date(selectedDate).toLocaleDateString('sr-RS') : '[Datum]';
+    const phone = '381601234567'; // tvoј broj bez plusa
+
+    const message = Zdravo! Želeo/la bih da rezervišem termin.%0AIme: ${first} ${last}%0ADatum: ${date}%0AUmetnik: ${artist};
+    whatsappBtn.href = https://wa.me/${phone}?text=${message};
+  }
+
+  // ---------- Submit booking ----------
+  document.getElementById('bookingForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    // basic validation
+    if (!selectedDate) { alert('Molimo izaberite datum iz kalendara.'); return; }
+    const first = document.getElementById('firstName').value.trim();
+    const last = document.getElementById('lastName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const artist = document.getElementById('artistSelect').value;
+    const sessionType = document.getElementById('sessionType').value;
+    const description = document.getElementById('description').value.trim();
+
+    if (!first || !last || !email || !phone || !artist || !sessionType) {
+      alert('Molimo popunite sva obavezna polja.');
+      return;
+    }
+
+    const newBooking = {
+      first_name: first,
+      last_name: last,
+      email,
+      phone,
+      artist,
+      session_type: sessionType,
+      description,
+      date: selectedDate,
+      status: 'pending',
+      notified: false,
+      timestamp: new Date().toISOString()
+    };
+
+    try {
+      const docRef = await addDoc(collection(db, 'bookings'), newBooking);
+
+      // Send admin notification once
+      if (!newBooking.notified) {
+        // template_admin_notify must exist in your EmailJS account
+        await emailjs.send('service_sptattoo', 'template_admin_notify', {
+          client_name: ${newBooking.first_name} ${newBooking.last_name},
+          client_email: newBooking.email,
+          date: newBooking.date,
+          artist: newBooking.artist,
+          session_type: newBooking.session_type,
+          description: newBooking.description,
+          admin_email: 'sp.tattoo20@gmail.com' // handy in template if you use it
+        });
+
+        // mark notified to true
+        await updateDoc(doc(db, 'bookings', docRef.id), { notified: true });
       }
+
+      alert('✅ Zahtev je poslat! Uskoro ćemo vas kontaktirati.');
+      // reset form
+      this.reset();
+      selectedDate = null;
+      document.getElementById('selectedDateBox').classList.add('hidden');
+      document.getElementById('priceInfo').classList.add('hidden');
+
+      // refresh calendar & admin list (real-time listener will also update)
+      await renderCalendar();
+    } catch (err) {
+      console.error('Greška pri čuvanju zahteva:', err);
+      alert('❌ Došlo je do greške. Pokušajte ponovo.');
+    }
+  });
+
+  // ---------- Admin login & panel ----------
+  function showAdminLogin() {
+    document.getElementById('adminLoginModal').classList.remove('hidden');
+    document.getElementById('loginError').classList.add('hidden');
+  }
+  function closeAdminLogin() {
+    document.getElementById('adminLoginModal').classList.add('hidden');
+    document.getElementById('adminUser').value = '';
+    document.getElementById('adminPass').value = '';
+  }
+  function loginAdmin() {
+    const user = document.getElementById('adminUser').value;
+    const pass = document.getElementById('adminPass').value;
+    if (user === ADMIN_USER && pass === ADMIN_PASS) {
+      closeAdminLogin();
+      document.getElementById('adminPanel').classList.remove('hidden');
+      // load requests (but we also have onSnapshot below)
+      loadAdminRequests();
+    } else {
+      document.getElementById('loginError').classList.remove('hidden');
+    }
+  }
+  function logoutAdmin() {
+    document.getElementById('adminPanel').classList.add('hidden');
+  }
+
+  // manual refresh button
+  function refreshRequests(){ loadAdminRequests(); }
+
+  // ---------- Admin: load & render requests ----------
+  // We'll use real-time listener (onSnapshot) to keep UI in sync
+  const bookingsCollection = collection(db, 'bookings');
+  const bookingsQuery = query(bookingsCollection, orderBy('timestamp', 'desc'));
+
+  const adminRequestsContainer = document.getElementById('adminRequests');
+
+  // Real-time listener
+  onSnapshot(bookingsQuery, (snapshot) => {
+    // update bookingStatusMap & UI
+    bookingStatusMap.clear();
+    snapshot.forEach(docSnap => {
+      const d = docSnap.data();
+      if (d && d.date) bookingStatusMap.set(d.date, d.status || 'pending');
+    });
+    // re-render calendar with updated statuses
+    renderCalendar();
+
+    // update admin panel if open
+    if (!document.getElementById('adminPanel').classList.contains('hidden')) {
+      loadAdminRequestsFromSnapshot(snapshot);
+    }
+  });
+
+  // When admin panel is open, load requests
+  async function loadAdminRequests() {
+    const snap = await getDocs(bookingsQuery);
+    loadAdminRequestsFromSnapshot(snap);
+  }
+
+  function loadAdminRequestsFromSnapshot(snapshot) {
+    adminRequestsContainer.innerHTML = '';
+    snapshot.forEach(docSnap => {
+      const d = docSnap.data();
+      const id = docSnap.id;
+      const card = document.createElement('div');
+      card.className = 'bg-gray-800 p-4 rounded flex flex-col md:flex-row md:justify-between gap-3 md:items-center';
+      const left = document.createElement('div');
+      left.innerHTML = `<div class="font-semibold">${d.first_name} ${d.last_name}</div>
+                        <div class="text-sm text-gray-300">${d.date} — ${d.artist} — ${d.session_type}</div>
+                        <div class="text-sm mt-2">${d.description ? d.description : ''}</div>
+                        <div class="text-xs text-gray-400 mt-1">Email: ${d.email} • Tel: ${d.phone}</div>`;
+      const right = document.createElement('div');
+      right.className = 'flex gap-2';
+
+      // status label
+      const statusLabel = document.createElement('div');
+      statusLabel.className = 'px-2 py-1 rounded text-sm font-semibold';
+      if (d.status === 'confirmed') { statusLabel.classList.add('bg-green-700'); statusLabel.textContent = 'Potvrđeno'; }
+      else if (d.status === 'rejected') { statusLabel.classList.add('bg-gray-600'); statusLabel.textContent = 'Odbijeno'; }
+      else { statusLabel.classList.add('bg-red-600'); statusLabel.textContent = 'Na čekanju'; }
+
+      // Confirm button
+      const btnConfirm = document.createElement('button');
+      btnConfirm.className = 'bg-green-600 px-3 py-2 rounded';
+      btnConfirm.textContent = '✔ Potvrdi';
+      btnConfirm.onclick = async () => {
+        try {
+          await updateDoc(doc(db, 'bookings', id), { status: 'confirmed' });
+          // send email to client about confirmation (use template_client_confirm)
+          await emailjs.send('service_sptattoo', 'template_client_confirm', {
+            client_name: ${d.first_name} ${d.last_name},
+            client_email: d.email,
+            date: d.date,
+            artist: d.artist,
+            session_type: d.session_type
+          });
+          alert('✅ Termin potvrđen i klijent obavešten.');
+        } catch (err) {
+          console.error('Error confirming:', err);
+          alert('Greška pri potvrdi. Pogledaj konzolu.');
+        }
+      };
+
+      const btnReject = document.createElement('button');
+      btnReject.className = 'bg-red-600 px-3 py-2 rounded';
+      btnReject.textContent = '✖ Odbij';
+      btnReject.onclick = async () => {
+        try {
+          await updateDoc(doc(db, 'bookings', id), { status: 'rejected' });
+          alert('❌ Termin odbijen.');
+        } catch (err) {
+          console.error('Error rejecting:', err);
+          alert('Greška pri odbijanju. Pogledaj konzolu.');
+        }
+      };
+
+      right.appendChild(statusLabel);
+      right.appendChild(btnConfirm);
+      right.appendChild(btnReject);
+
+      card.appendChild(left);
+      card.appendChild(right);
+      adminRequestsContainer.appendChild(card);
     });
   }
 
-  async function updateStatus(id,status){
-    await updateDoc(doc(db,'bookings',id),{status});
-    renderCalendar();
-    loadRequests();
-  }
+  // ---------- helper to render initial calendar & admin list ----------
+  await renderCalendar();
+  // adminRequests will be populated by onSnapshot when admin opens panel
 
-  document.getElementById('bookingForm').addEventListener('submit',async function(e){
-    e.preventDefault();
-    if(!selectedDate){alert('Molimo izaberite datum iz kalendara.'); return;}
-    const formData={
-      first_name: document.getElementById('firstName').value,
-      last_name: document.getElementById('lastName').value,
-      email: document.getElementById('email').value,
-      phone: document.getElementById('phone').value,
-      artist: document.getElementById('artist').value,
-      session_type: document.getElementById('sessionType').value,
-      description: document.getElementById('description').value,
-      date:selectedDate,
-      status:'pending',
-      notified:false,
-      timestamp:new Date().toISOString()
-    };
-
-    try{
-      const docRef=await addDoc(collection(db,"bookings"),formData);
-
-      if(!formData.notified){
-        await emailjs.send('service_sptattoo','template_admin_notify',{
-          client_name: formData.first_name+' '+formData.last_name,
-          client_email: formData.email,
-          date: formData.date,
-          artist: formData.artist,
-          session_type: formData.session_type,
-          description: formData.description
-        });
-        await updateDoc(doc(db,"bookings",docRef.id),{notified:true});
-      }
-
-      alert('✅ Termin uspešno poslat!');
-      this.reset();
-      selectedDate=null;
-      document.getElementById('selectedDate').classList.add('hidden');
-      document.getElementById('priceInfo').classList.add('hidden');
-      renderCalendar();
-      loadRequests();
-    }catch(err){console.error(err); alert('❌ Došlo je do greške.');}
+  // ---------- utility: ensure WhatsApp link updates when inputs change ----------
+  document.querySelectorAll('#firstName,#lastName,#artistSelect').forEach(el => {
+    el.addEventListener('input', updateWhatsAppLink);
   });
+  // update whatsapp initially
+  updateWhatsAppLink();
 
-  renderCalendar();
-  loadRequests();
-</script>
+  // ---------- end module ----------
+  </script>
 
-</body>
+  </body>
 </html>
