@@ -302,7 +302,30 @@
             </form>
         </div>
     </section>
+<!-- EmailJS biblioteka -->
+<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 
+<script>
+    // Inicijalizacija EmailJS
+    emailjs.init("YOUR_PUBLIC_KEY"); // ubaci svoj Public Key
+
+    // Pronalazi formu po ID-u
+    const form = document.getElementById('booking-form');
+
+    // Listener koji šalje mejl kada se forma pošalje
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // sprečava refresh stranice
+
+        emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
+        .then(() => {
+            alert('Zahtev je poslat! Hvala što ste zakazali termin.');
+            form.reset(); // resetuje formu posle slanja
+        }, (error) => {
+            alert('Došlo je do greške. Pokušajte ponovo.');
+            console.error(error); // loguje grešku u konzoli
+        });
+    });
+</script>
     <!-- Contact Section -->
     <section id="contact" class="py-20 bg-gray-900">
         <div class="max-w-4xl mx-auto px-4">
