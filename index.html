@@ -191,115 +191,80 @@
     </section>
 
     <!-- Booking Section -->
-    <section id="booking" class="py-20 bg-gray-800">
-        <div class="max-w-4xl mx-auto px-4">
-            <h2 class="text-4xl font-bold text-center mb-16 tattoo-icon">Zakazivanje Termina</h2>
-            
-            <!-- Calendar -->
-            <div class="bg-gray-900 rounded-lg p-6 mb-8">
-                <div class="flex justify-between items-center mb-6">
-                    <button onclick="changeMonth(-1)" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">‹</button>
-                    <h3 id="currentMonth" class="text-xl font-bold"></h3>
-                    <button onclick="changeMonth(1)" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">›</button>
-                </div>
-                
-                <div class="calendar-grid mb-4">
-                    <div class="text-center font-semibold p-2">Ned</div>
-                    <div class="text-center font-semibold p-2">Pon</div>
-                    <div class="text-center font-semibold p-2">Uto</div>
-                    <div class="text-center font-semibold p-2">Sre</div>
-                    <div class="text-center font-semibold p-2">Čet</div>
-                    <div class="text-center font-semibold p-2">Pet</div>
-                    <div class="text-center font-semibold p-2">Sub</div>
-                </div>
-                
-                <div id="calendarDays" class="calendar-grid"></div>
-                
-                <div class="flex justify-center space-x-6 mt-6 text-sm">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-4 h-4 bg-green-500 rounded"></div>
-                        <span>Dostupno</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-4 h-4 bg-red-500 rounded"></div>
-                        <span>Zauzeto</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-4 h-4 bg-blue-500 rounded"></div>
-                        <span>Izabrano</span>
-                    </div>
-                </div>
-            </div>
+   <form id="bookingForm" class="bg-gray-900 rounded-lg p-8 space-y-6">
+    <div class="grid md:grid-cols-2 gap-6">
+        <div>
+            <label class="block text-sm font-medium mb-2">Umetnik</label>
+            <select id="artist" name="artist" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
+                <option value="">Izaberite umetnika</option>
+                <option value="Stefan">Stefan</option>
+                <option value="Emilija">Emilija</option>
+                <option value="Josipa">Josipa</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-sm font-medium mb-2">Tip termina</label>
+            <select id="sessionType" name="session_type" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none" onchange="updatePrice()">
+                <option value="">Izaberite tip</option>
+                <option value="small" data-price="150" data-deposit="100">Small Tattoo - 150€</option>
+                <option value="half" data-price="300" data-deposit="150">Half Day - 300€</option>
+                <option value="full" data-price="600" data-deposit="250">Full Day - 600€</option>
+            </select>
+        </div>
+    </div>
 
-            <!-- Booking Form -->
-            <form id="bookingForm" class="bg-gray-900 rounded-lg p-8 space-y-6">
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Umetnik</label>
-                        <select id="artist" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
-                            <option value="">Izaberite umetnika</option>
-                            <option value="Stefan">Stefan</option>
-                            <option value="Emilija">Emilija</option>
-                            <option value="Josipa">Josipa</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Tip termina</label>
-                        <select id="sessionType" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none" onchange="updatePrice()">
-                            <option value="">Izaberite tip</option>
-                            <option value="small" data-price="150" data-deposit="100">Small Tattoo - 150€</option>
-                            <option value="half" data-price="300" data-deposit="150">Half Day - 300€</option>
-                            <option value="full" data-price="600" data-deposit="250">Full Day - 600€</option>
-                        </select>
-                    </div>
-                </div>
+    <div class="grid md:grid-cols-2 gap-6">
+        <div>
+            <label class="block text-sm font-medium mb-2">Ime</label>
+            <input type="text" id="firstName" name="first_name" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
+        </div>
+        <div>
+            <label class="block text-sm font-medium mb-2">Prezime</label>
+            <input type="text" id="lastName" name="last_name" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
+        </div>
+    </div>
 
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Ime</label>
-                        <input type="text" id="firstName" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Prezime</label>
-                        <input type="text" id="lastName" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
-                    </div>
-                </div>
+    <div class="grid md:grid-cols-2 gap-6">
+        <div>
+            <label class="block text-sm font-medium mb-2">Broj telefona</label>
+            <input type="tel" id="phone" name="phone" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
+        </div>
+        <div>
+            <label class="block text-sm font-medium mb-2">Email adresa</label>
+            <input type="email" id="email" name="email" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
+        </div>
+    </div>
 
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Broj telefona</label>
-                        <input type="tel" id="phone" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Email adresa</label>
-                        <input type="email" id="email" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
-                    </div>
-                </div>
+    <div>
+        <label class="block text-sm font-medium mb-2">Opis željene tetovaže</label>
+        <textarea id="description" name="description" required rows="4" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none" placeholder="Opišite detaljno šta želite..."></textarea>
+    </div>
 
-                <div>
-                    <label class="block text-sm font-medium mb-2">Opis željene tetovaže</label>
-                    <textarea id="description" required rows="4" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none" placeholder="Opišite detaljno šta želite..."></textarea>
-                </div>
+    <!-- Hidden inputs za slanje dodatnih informacija -->
+    <input type="hidden" id="totalPriceHidden" name="total_price">
+    <input type="hidden" id="depositHidden" name="deposit">
+    <input type="hidden" id="dateHidden" name="date">
 
-                <div id="priceInfo" class="bg-gray-800 rounded-lg p-4 hidden">
-                    <div class="flex justify-between items-center">
-                        <span>Ukupna cena:</span>
-                        <span id="totalPrice" class="font-bold text-xl"></span>
-                    </div>
-                    <div class="flex justify-between items-center mt-2">
-                        <span>Depozit:</span>
-                        <span id="depositAmount" class="font-bold text-purple-400"></span>
-                    </div>
-                </div>
+    <!-- Prikaz informacija korisniku -->
+    <div id="priceInfo" class="bg-gray-800 rounded-lg p-4 hidden">
+        <div class="flex justify-between items-center">
+            <span>Ukupna cena:</span>
+            <span id="totalPrice" class="font-bold text-xl"></span>
+        </div>
+        <div class="flex justify-between items-center mt-2">
+            <span>Depozit:</span>
+            <span id="depositAmount" class="font-bold text-purple-400"></span>
+        </div>
+    </div>
 
-                <div id="selectedDate" class="text-center text-purple-400 hidden">
-                    <p>Izabrani datum: <span id="dateDisplay"></span></p>
-                </div>
+    <div id="selectedDate" class="text-center text-purple-400 hidden">
+        <p>Izabrani datum: <span id="dateDisplay"></span></p>
+    </div>
 
-                <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105">
-                    Pošaljite Zahtev za Termin
-                </button>
-            </form>
+    <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105">
+        Pošaljite Zahtev za Termin
+    </button>
+</form>
         </div>
     </section>
 <!-- EmailJS biblioteka -->
