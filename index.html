@@ -322,7 +322,7 @@
         document.getElementById('dateHidden').value = document.getElementById('dateDisplay').textContent;
 
         emailjs.sendForm('service_sptattoo', 'template_sptattoo', this)
-        .then(() => {
+        .then(service_sptattoo', 'template_sptattoo_reply', this); => {
             alert('✅ Zahtev je poslat! Hvala što ste zakazali termin.');
             form.reset();
         }, (error) => {
