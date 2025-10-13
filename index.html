@@ -193,7 +193,42 @@
     <!-- Booking Section -->
    <form id="bookingForm" class="bg-gray-900 rounded-lg p-8 space-y-6">
     <div class="grid md:grid-cols-2 gap-6">
-        <div>
+        <div> 
+            <!-- Calendar -->
+<div class="bg-gray-900 rounded-lg p-6 mb-8">
+  <div class="flex justify-between items-center mb-6">
+    <button onclick="changeMonth(-1)" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">‹</button>
+    <h3 id="currentMonth" class="text-xl font-bold"></h3>
+    <button onclick="changeMonth(1)" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">›</button>
+  </div>
+
+  <div class="calendar-grid mb-4">
+    <div class="text-center font-semibold p-2">Ned</div>
+    <div class="text-center font-semibold p-2">Pon</div>
+    <div class="text-center font-semibold p-2">Uto</div>
+    <div class="text-center font-semibold p-2">Sre</div>
+    <div class="text-center font-semibold p-2">Čet</div>
+    <div class="text-center font-semibold p-2">Pet</div>
+    <div class="text-center font-semibold p-2">Sub</div>
+  </div>
+
+  <div id="calendarDays" class="calendar-grid"></div>
+
+  <div class="flex justify-center space-x-6 mt-6 text-sm">
+    <div class="flex items-center space-x-2">
+      <div class="w-4 h-4 bg-green-500 rounded"></div>
+      <span>Dostupno</span>
+    </div>
+    <div class="flex items-center space-x-2">
+      <div class="w-4 h-4 bg-red-500 rounded"></div>
+      <span>Zauzeto</span>
+    </div>
+    <div class="flex items-center space-x-2">
+      <div class="w-4 h-4 bg-blue-500 rounded"></div>
+      <span>Izabrano</span>
+    </div>
+  </div>
+</div>
             <label class="block text-sm font-medium mb-2">Umetnik</label>
             <select id="artist" name="artist" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
                 <option value="">Izaberite umetnika</option>
