@@ -190,219 +190,294 @@
         </div>
     </section>
 
-<!-- Booking Section -->
-<form id="bookingForm" class="bg-gray-900 rounded-lg p-8 space-y-6">
-  <div class="grid md:grid-cols-2 gap-6">
-    <div>
-      <!-- Calendar -->
-      <div class="bg-gray-900 rounded-lg p-6 mb-8">
-        <div class="flex justify-between items-center mb-6">
-          <button type="button" onclick="changeMonth(-1)" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">‹</button>
-          <h3 id="currentMonth" class="text-xl font-bold"></h3>
-          <button type="button" onclick="changeMonth(1)" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">›</button>
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SP Tattoo Booking</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Stil za kalendar -->
+  <style>
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .day {
+      text-align: center;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .day:hover {
+      background-color: #6b21a8;
+      color: white;
+    }
+    .selected {
+      background-color: #3b82f6;
+      color: white;
+    }
+    .booked {
+      background-color: #dc2626;
+      color: white;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body class="bg-gray-950 text-white">
+  <section class="container mx-auto px-6 py-10">
+    <form id="bookingForm" class="bg-gray-900 rounded-lg p-8 space-y-6">
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <!-- Calendar -->
+          <div class="bg-gray-900 rounded-lg p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+              <button type="button" onclick="changeMonth(-1)" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">‹</button>
+              <h3 id="currentMonth" class="text-xl font-bold"></h3>
+              <button type="button" onclick="changeMonth(1)" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">›</button>
+            </div>
+
+            <div class="calendar-grid mb-4">
+              <div class="text-center font-semibold p-2">Ned</div>
+              <div class="text-center font-semibold p-2">Pon</div>
+              <div class="text-center font-semibold p-2">Uto</div>
+              <div class="text-center font-semibold p-2">Sre</div>
+              <div class="text-center font-semibold p-2">Čet</div>
+              <div class="text-center font-semibold p-2">Pet</div>
+              <div class="text-center font-semibold p-2">Sub</div>
+            </div>
+
+            <div id="calendarDays" class="calendar-grid"></div>
+
+            <div class="flex justify-center space-x-6 mt-6 text-sm">
+              <div class="flex items-center space-x-2">
+                <div class="w-4 h-4 bg-green-500 rounded"></div>
+                <span>Dostupno</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <div class="w-4 h-4 bg-red-500 rounded"></div>
+                <span>Zauzeto</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <div class="w-4 h-4 bg-blue-500 rounded"></div>
+                <span>Izabrano</span>
+              </div>
+            </div>
+          </div>
+
+          <label class="block text-sm font-medium mb-2">Umetnik</label>
+          <select id="artist" name="artist" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
+            <option value="">Izaberite umetnika</option>
+            <option value="Stefan">Stefan</option>
+            <option value="Emilija">Emilija</option>
+            <option value="Josipa">Josipa</option>
+          </select>
         </div>
 
-        <div class="calendar-grid mb-4">
-          <div class="text-center font-semibold p-2">Ned</div>
-          <div class="text-center font-semibold p-2">Pon</div>
-          <div class="text-center font-semibold p-2">Uto</div>
-          <div class="text-center font-semibold p-2">Sre</div>
-          <div class="text-center font-semibold p-2">Čet</div>
-          <div class="text-center font-semibold p-2">Pet</div>
-          <div class="text-center font-semibold p-2">Sub</div>
-        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2">Tip termina</label>
+          <select id="sessionType" name="session_type" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none" onchange="updatePrice()">
+            <option value="">Izaberite tip</option>
+            <option value="small" data-price="150" data-deposit="100">Small Tattoo - 150€</option>
+            <option value="half" data-price="300" data-deposit="150">Half Day - 300€</option>
+            <option value="full" data-price="600" data-deposit="250">Full Day - 600€</option>
+          </select>
 
-        <div id="calendarDays" class="calendar-grid"></div>
+          <div class="mt-6">
+            <label class="block text-sm font-medium mb-2">Ime</label>
+            <input type="text" id="firstName" name="first_name" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3">
+          </div>
 
-        <div class="flex justify-center space-x-6 mt-6 text-sm">
-          <div class="flex items-center space-x-2">
-            <div class="w-4 h-4 bg-green-500 rounded"></div>
-            <span>Dostupno</span>
+          <div class="mt-6">
+            <label class="block text-sm font-medium mb-2">Prezime</label>
+            <input type="text" id="lastName" name="last_name" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3">
           </div>
-          <div class="flex items-center space-x-2">
-            <div class="w-4 h-4 bg-red-500 rounded"></div>
-            <span>Zauzeto</span>
+
+          <div class="mt-6">
+            <label class="block text-sm font-medium mb-2">Broj telefona</label>
+            <input type="tel" id="phone" name="phone" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3">
           </div>
-          <div class="flex items-center space-x-2">
-            <div class="w-4 h-4 bg-blue-500 rounded"></div>
-            <span>Izabrano</span>
+
+          <div class="mt-6">
+            <label class="block text-sm font-medium mb-2">Email</label>
+            <input type="email" id="email" name="email" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3">
           </div>
         </div>
       </div>
 
-      <label class="block text-sm font-medium mb-2">Umetnik</label>
-      <select id="artist" name="artist" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
-        <option value="">Izaberite umetnika</option>
-        <option value="Stefan">Stefan</option>
-        <option value="Emilija">Emilija</option>
-        <option value="Josipa">Josipa</option>
-      </select>
-    </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">Opis tetovaže</label>
+        <textarea id="description" name="description" required rows="4" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3" placeholder="Opišite tetovažu..."></textarea>
+      </div>
 
-    <div>
-      <label class="block text-sm font-medium mb-2">Tip termina</label>
-      <select id="sessionType" name="session_type" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none" onchange="updatePrice()">
-        <option value="">Izaberite tip</option>
-        <option value="small" data-price="150" data-deposit="100">Small Tattoo - 150€</option>
-        <option value="half" data-price="300" data-deposit="150">Half Day - 300€</option>
-        <option value="full" data-price="600" data-deposit="250">Full Day - 600€</option>
-      </select>
-    </div>
-  </div>
+      <!-- Hidden fields -->
+      <input type="hidden" id="totalPriceHidden" name="total_price">
+      <input type="hidden" id="depositHidden" name="deposit">
+      <input type="hidden" id="dateHidden" name="date">
 
-  <div class="grid md:grid-cols-2 gap-6">
-    <div>
-      <label class="block text-sm font-medium mb-2">Ime</label>
-      <input type="text" id="firstName" name="first_name" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
-    </div>
-    <div>
-      <label class="block text-sm font-medium mb-2">Prezime</label>
-      <input type="text" id="lastName" name="last_name" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
-    </div>
-  </div>
+      <div id="priceInfo" class="bg-gray-800 rounded-lg p-4 hidden">
+        <div class="flex justify-between items-center">
+          <span>Ukupna cena:</span>
+          <span id="totalPrice" class="font-bold text-xl"></span>
+        </div>
+        <div class="flex justify-between items-center mt-2">
+          <span>Depozit:</span>
+          <span id="depositAmount" class="font-bold text-purple-400"></span>
+        </div>
+      </div>
 
-  <div class="grid md:grid-cols-2 gap-6">
-    <div>
-      <label class="block text-sm font-medium mb-2">Broj telefona</label>
-      <input type="tel" id="phone" name="phone" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
-    </div>
-    <div>
-      <label class="block text-sm font-medium mb-2">Email adresa</label>
-      <input type="email" id="email" name="email" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
-    </div>
-  </div>
+      <div id="selectedDate" class="text-center text-purple-400 hidden">
+        <p>Izabrani datum: <span id="dateDisplay"></span></p>
+      </div>
 
-  <div>
-    <label class="block text-sm font-medium mb-2">Opis željene tetovaže</label>
-    <textarea id="description" name="description" required rows="4" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none" placeholder="Opišite detaljno šta želite..."></textarea>
-  </div>
+      <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 py-4 rounded-lg font-semibold text-lg">
+        Pošaljite Zahtev za Termin
+      </button>
+    </form>
+  </section>
 
-  <input type="hidden" id="totalPriceHidden" name="total_price">
-  <input type="hidden" id="depositHidden" name="deposit">
-  <input type="hidden" id="dateHidden" name="date">
+  <!-- EmailJS -->
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <script>
+    emailjs.init("jqIOVZLJJvDFs6I2d");
+  </script>
 
-  <div id="priceInfo" class="bg-gray-800 rounded-lg p-4 hidden">
-    <div class="flex justify-between items-center">
-      <span>Ukupna cena:</span>
-      <span id="totalPrice" class="font-bold text-xl"></span>
-    </div>
-    <div class="flex justify-between items-center mt-2">
-      <span>Depozit:</span>
-      <span id="depositAmount" class="font-bold text-purple-400"></span>
-    </div>
-  </div>
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
-  <div id="selectedDate" class="text-center text-purple-400 hidden">
-    <p>Izabrani datum: <span id="dateDisplay"></span></p>
-  </div>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDmCJL8QSAifNUMib_KZ4jj14bLaAELaT",
+      authDomain: "adminsptattoo.firebaseapp.com",
+      projectId: "adminsptattoo",
+      storageBucket: "adminsptattoo.firebasestorage.app",
+      messagingSenderId: "1027852466595",
+      appId: "1:1027852466595:web:394719d82a21b397a80216"
+    };
 
-  <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105">
-    Pošaljite Zahtev za Termin
-  </button>
-</form>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-<!-- EmailJS -->
-<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-<script>
-  emailjs.init("jqIOVZLJJvDFs6I2d");
-</script>
+    // 📅 KALENDAR
+    let currentDate = new Date();
+    let bookedDates = new Set();
+    const calendarDays = document.getElementById('calendarDays');
+    const currentMonth = document.getElementById('currentMonth');
 
-<!-- Firebase + Calendar + Submit Handler -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+    async function loadBookedDates() {
+      bookedDates.clear();
+      const querySnapshot = await getDocs(collection(db, "bookings"));
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        if (data.date) bookedDates.add(data.date);
+      });
+    }
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDmCJL8QSAifNUMib_KZ4jj14bLaAELaT",
-  authDomain: "adminsptattoo.firebaseapp.com",
-  projectId: "adminsptattoo",
-  storageBucket: "adminsptattoo.firebasestorage.app",
-  messagingSenderId: "1027852466595",
-  appId: "1:1027852466595:web:394719d82a21b397a80216"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+    async function renderCalendar() {
+      await loadBookedDates();
 
-let currentMonth = new Date().getMonth();
-let currentYear = new Date().getFullYear();
-let bookedDates = [];
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      currentMonth.textContent = currentDate.toLocaleString('sr-RS', { month: 'long', year: 'numeric' });
+      calendarDays.innerHTML = "";
 
-async function fetchBookedDates(){
-  bookedDates = [];
-  const snapshot = await getDocs(collection(db, "bookings"));
-  snapshot.forEach(doc => {
-    bookedDates.push(doc.data().date);
-  });
-}
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-async function renderCalendar(){
-  await fetchBookedDates();
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement('div');
+        calendarDays.appendChild(empty);
+      }
 
-  const monthNames = ["Januar","Februar","Mart","April","Maj","Jun","Jul","Avgust","Septembar","Oktobar","Novembar","Decembar"];
-  document.getElementById('currentMonth').textContent = monthNames[currentMonth] + " " + currentYear;
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dayEl = document.createElement('div');
+        const dateStr = new Date(year, month, d).toLocaleDateString('sr-RS');
+        dayEl.classList.add('day', 'bg-gray-800');
+        dayEl.textContent = d;
 
-  const calendarDays = document.getElementById('calendarDays');
-  calendarDays.innerHTML = "";
+        if (bookedDates.has(dateStr)) {
+          dayEl.classList.add('booked');
+        } else {
+          dayEl.addEventListener('click', () => selectDate(year, month, d));
+        }
 
-  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-  const daysInMonth = new Date(currentYear, currentMonth+1, 0).getDate();
-
-  for(let i=0;i<firstDay;i++){
-    calendarDays.appendChild(document.createElement('div'));
-  }
-
-  for(let d=1; d<=daysInMonth; d++){
-    const cell = document.createElement('div');
-    cell.textContent = d;
-    cell.className = "text-center p-2 cursor-pointer rounded";
-
-    const dateStr = d + "." + (currentMonth+1) + "." + currentYear;
-
-    if(bookedDates.includes(dateStr)){
-      cell.classList.add("bg-red-500");
-      cell.style.cursor = "not-allowed";
-    } else {
-      cell.classList.add("bg-green-500");
-      cell.onclick = function(){
-        const prevSelected = document.querySelector("#calendarDays .bg-blue-500");
-        if(prevSelected) prevSelected.classList.remove("bg-blue-500"), prevSelected.classList.add("bg-green-500");
-
-        cell.classList.remove("bg-green-500");
-        cell.classList.add("bg-blue-500");
-        document.getElementById('dateDisplay').textContent = dateStr;
-        document.getElementById('selectedDate').classList.remove('hidden');
+        calendarDays.appendChild(dayEl);
       }
     }
 
-    calendarDays.appendChild(cell);
-  }
-}
+    function changeMonth(step) {
+      currentDate.setMonth(currentDate.getMonth() + step);
+      renderCalendar();
+    }
 
-window.changeMonth = function(offset){
-  currentMonth += offset;
-  if(currentMonth < 0){ currentMonth = 11; currentYear--; }
-  if(currentMonth > 11){ currentMonth = 0; currentYear++; }
-  renderCalendar();
-}
+    function selectDate(year, month, day) {
+      document.querySelectorAll('.day').forEach(el => el.classList.remove('selected'));
+      event.target.classList.add('selected');
+      const selected = new Date(year, month, day);
+      const formatted = selected.toLocaleDateString('sr-RS');
+      document.getElementById('dateDisplay').textContent = formatted;
+      document.getElementById('dateHidden').value = formatted;
+      document.getElementById('selectedDate').classList.remove('hidden');
+    }
 
-renderCalendar();
+    renderCalendar();
 
-window.updatePrice = function(){
-  const sessionSelect = document.getElementById('sessionType');
-  const selected = sessionSelect.options[sessionSelect.selectedIndex];
-  const price = selected.getAttribute('data-price');
-  const deposit = selected.getAttribute('data-deposit');
+    // 💰 CENA
+    window.updatePrice = function() {
+      const select = document.getElementById('sessionType');
+      const option = select.options[select.selectedIndex];
+      const price = option.getAttribute('data-price');
+      const deposit = option.getAttribute('data-deposit');
 
-  if(price && deposit){
-    document.getElementById('totalPrice').textContent = price + "€";
-    document.getElementById('depositAmount').textContent = deposit + "€";
-    document.getElementById('priceInfo').classList.remove('hidden');
-  }
-}
+      if (price) {
+        document.getElementById('totalPrice').textContent = price + " €";
+        document.getElementById('depositAmount').textContent = deposit + " €";
+        document.getElementById('priceInfo').classList.remove('hidden');
+      }
+    };
 
-document.getElementById('bookingForm').addEventListener('submit', async function(e){
-  e.preventDefault();
+    // 📩 FORMA
+    document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
 
+      const form = e.target;
+      document.getElementById('totalPriceHidden').value = document.getElementById('totalPrice').textContent;
+      document.getElementById('depositHidden').value = document.getElementById('depositAmount').textContent;
+
+      const formData = {
+        first_name: document.getElementById('firstName').value,
+        last_name: document.getElementById('lastName').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        artist: document.getElementById('artist').value,
+        session_type: document.getElementById('sessionType').value,
+        description: document.getElementById('description').value,
+        date: document.getElementById('dateHidden').value,
+        total_price: document.getElementById('totalPriceHidden').value,
+        deposit: document.getElementById('depositHidden').value,
+        timestamp: new Date()
+      };
+
+      try {
+        await addDoc(collection(db, "bookings"), formData);
+        console.log("✅ Sačuvano u Firestore!");
+        await emailjs.sendForm('service_sptattoo', 'template_sptattoo', form);
+        alert('✅ Termin uspešno poslat i sačuvan!');
+        form.reset();
+        renderCalendar();
+      } catch (error) {
+        console.error("❌ Greška:", error);
+        alert('❌ Došlo je do greške. Pokušajte ponovo.');
+      }
+    });
+  </script>
+</section>
   document.getElementById('totalPriceHidden').value = document.getElementById('
     <!-- Contact Section -->
     <section id="contact" class="py-20 bg-gray-900">
