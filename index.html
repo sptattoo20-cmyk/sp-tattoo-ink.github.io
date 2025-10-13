@@ -104,7 +104,7 @@
                 Umetnost koja traje zauvek
             </p>
             <p class="text-lg md:text-xl text-purple-300 mb-12 max-w-2xl mx-auto">
-                Profesionalni tattoo studio sa preko 10 godina iskustva u stvaranju jedinstvenih umetničkih dela
+                Profesionalni tattoo artisti sa preko 5 godina iskustva u stvaranju jedinstvenih umetničkih dela
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <button onclick="document.getElementById('booking').scrollIntoView({behavior: 'smooth'})" 
@@ -118,7 +118,7 @@
             </div>
             <div class="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
                 <div class="text-center">
-                    <div class="text-3xl font-bold text-purple-400">10+</div>
+                    <div class="text-3xl font-bold text-purple-400">5+</div>
                     <div class="text-sm text-gray-300">Godina iskustva</div>
                 </div>
                 <div class="text-center">
@@ -126,7 +126,7 @@
                     <div class="text-sm text-gray-300">Profesionalna umetnika</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-3xl font-bold text-blue-400">1000+</div>
+                    <div class="text-3xl font-bold text-blue-400">100+</div>
                     <div class="text-sm text-gray-300">Zadovoljnih klijenata</div>
                 </div>
             </div>
@@ -171,7 +171,7 @@
                 <div class="bg-gray-800 rounded-lg p-8 border border-green-500/20 text-center">
                     <h3 class="text-2xl font-bold mb-4 text-green-400">Small Tattoo</h3>
                     <p class="text-4xl font-bold mb-4">150€</p>
-                    <p class="text-gray-400 mb-4">Manje tetovaže do 2 sata rada</p>
+                    <p class="text-gray-400 mb-4">Do 2 sata rada </p>
                     <p class="text-sm text-green-400">Depozit: 100€</p>
                 </div>
                 <div class="bg-gray-800 rounded-lg p-8 border border-purple-500/20 text-center">
@@ -302,10 +302,7 @@
 </form>
         </div>
     </section>
-<!-- EmailJS biblioteka -->
-<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 
-</section>
 <!-- EmailJS biblioteka -->
 <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 <script>
@@ -313,16 +310,13 @@
 
     const form = document.getElementById('bookingForm');
 
-    form.addEventListener('submit', function(event) {
-        event.preventDefault();
-
         // Pre slanja, ažuriramo hidden polja
         document.getElementById('totalPriceHidden').value = document.getElementById('totalPrice').textContent;
         document.getElementById('depositHidden').value = document.getElementById('depositAmount').textContent;
         document.getElementById('dateHidden').value = document.getElementById('dateDisplay').textContent;
 
         emailjs.sendForm('service_sptattoo', 'template_sptattoo', this)
-        .then(service_sptattoo', 'template_sptattoo_reply', this); => {
+        .then(); => {
             alert('✅ Zahtev je poslat! Hvala što ste zakazali termin.');
             form.reset();
         }, (error) => {
