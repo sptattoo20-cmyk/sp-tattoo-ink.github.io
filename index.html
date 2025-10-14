@@ -160,8 +160,6 @@
                             <select id="artist" required class="w-full p-3 bg-gray-800 rounded-lg border border-gray-600 text-white">
                                 <option value="">Izaberite umetnika</option>
                                 <option value="Stefan Petrović">Stefan Petrović - Glavni umetnik</option>
-                                <option value="Marko Jovanović">Marko Jovanović - Specijalizovan za realizam</option>
-                                <option value="Ana Nikolić">Ana Nikolić - Fine line tetoviranje</option>
                             </select>
                         </div>
                         
@@ -272,7 +270,7 @@
                                 📍 Adresa & Kontakt
                             </h3>
                             <div class="text-gray-300 space-y-2">
-                                <p>Knez Mihailova 15, 11000 Beograd</p>
+                                <p>Propsteistrasse 7, Hattersheim, Hessen, Germany</p>
                                 <p>
                                     <a href="mailto:sp.tattoo20@gmail.com" class="hover:text-red-400 transition-colors">
                                         📧 sp.tattoo20@gmail.com
@@ -280,7 +278,7 @@
                                 </p>
                                 <p>
                                     <a href="https://wa.me/381601234567" target="_blank" rel="noopener noreferrer" class="hover:text-red-400 transition-colors">
-                                        📱 WhatsApp: +381 60 123 4567
+                                        📱 WhatsApp: +381 63 1465 807
                                     </a>
                                 </p>
                             </div>
@@ -307,7 +305,6 @@
                             <div class="text-gray-300 space-y-1">
                                 <p>• Keš (RSD/EUR)</p>
                                 <p>• PayPal</p>
-                                <p>• Bankovna kartica</p>
                             </div>
                         </div>
                         
@@ -352,13 +349,12 @@
     <script>
         // Firebase Configuration - ZAMENITE SA VAŠIM PODACIMA
         const firebaseConfig = {
-            apiKey: "AIzaSyBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", // Vaš API Key
-            authDomain: "sp-tattoo-ink.firebaseapp.com", // Vaš Auth Domain
-            projectId: "sp-tattoo-ink", // Vaš Project ID
-            storageBucket: "sp-tattoo-ink.appspot.com", // Vaš Storage Bucket
-            messagingSenderId: "123456789012", // Vaš Messaging Sender ID
-            appId: "1:123456789012:web:abcdef123456789" // Vaš App ID
-        };
+        apiKey: "AIzaSyClHS0XqvG0k5k5yWMZkxH_MCOUtIFxHFg",
+        authDomain: "sp-tattoo.firebaseapp.com",
+        projectId: "sp-tattoo",
+        storageBucket: "sp-tattoo.firebasestorage.app",
+        messagingSenderId: "830314471901",
+        appId: "1:830314471901:web:7949e462ddff666893d634"
 
         // Initialize Firebase
         try {
@@ -371,7 +367,7 @@
 
         // EmailJS Configuration - ZAMENITE SA VAŠIM PODACIMA
         try {
-            emailjs.init("user_xxxxxxxxxxxxxxxx"); // Vaš EmailJS Public Key
+            emailjs.init("jqIOVZLJJvDFs6I2d"); // Vaš EmailJS Public Key
             console.log("EmailJS uspešno povezan!");
         } catch (error) {
             console.error("Greška pri povezivanju sa EmailJS:", error);
@@ -547,7 +543,7 @@
                 await db.collection('bookings').add(formData);
                 
                 // Send email notification - ZAMENITE SA VAŠIM SERVICE ID I TEMPLATE ID
-                await emailjs.send('service_xxxxxxxx', 'template_xxxxxxxx', {
+                await emailjs.send('service_sptattoo', 'template_sptattoo', {
                     to_email: 'sp.tattoo20@gmail.com', // Vaš email
                     from_name: formData.firstName + ' ' + formData.lastName,
                     from_email: formData.email,
@@ -590,7 +586,7 @@
             const password = document.getElementById('adminPassword').value;
             
             // Simple authentication - u produkciji koristite sigurniju metodu
-            if (username === 'admin' && password === 'sp2024tattoo') {
+            if (username === 'admin' && password === 'sp2020') {
                 document.getElementById('adminLogin').classList.add('hidden');
                 document.getElementById('adminDashboard').classList.remove('hidden');
                 loadPendingBookings();
@@ -669,7 +665,7 @@
                 });
                 
                 // Send confirmation email
-                await emailjs.send('service_xxxxxxxx', 'template_potvrda', {
+                await emailjs.send('service_sptattoo', 'template_h1zimtv', {
                     to_email: email,
                     to_name: firstName,
                     date: new Date(date).toLocaleDateString('sr-RS'),
@@ -690,7 +686,7 @@
                 await db.collection('bookings').doc(id).delete();
                 
                 // Send rejection email
-                await emailjs.send('service_xxxxxxxx', 'template_odbacivanje', {
+                await emailjs.send('service_sptattoo', 'template__h1zimtv', {
                     to_email: email,
                     to_name: firstName,
                     message: 'Nažalost, vaš zahtev za termin nije mogao biti prihvaćen. Molimo kontaktirajte nas za alternativne termine.'
