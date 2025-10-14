@@ -378,7 +378,7 @@
         let emailjsConnected = false;
         
         try {
-            emailjs.init("service_sptattoo"); // Vaš EmailJS Service ID
+            emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // Trebate da unesete vaš Public Key iz EmailJS
             emailjsConnected = true;
             console.log("EmailJS uspešno povezan!");
         } catch (error) {
@@ -544,7 +544,7 @@
             
             const selectedDate = document.getElementById('selectedDate').value;
             if (!selectedDate) {
-                alert('Molimo izaberite datum!');
+                showCustomAlert('Molimo izaberite datum!', 'error');
                 return;
             }
             
@@ -563,41 +563,61 @@
                 timestamp: new Date().toISOString()
             };
             
+            // Show loading state
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'Šalje se...';
+            submitButton.disabled = true;
+            
             try {
+                let firebaseSaved = false;
+                let emailSent = false;
+                
                 // Save to Firebase if connected
                 if (firebaseConnected && db) {
-                    await db.collection('bookings').add(formData);
-                    console.log('Podaci sačuvani u Firebase');
-                } else {
-                    console.log('Demo režim - podaci nisu sačuvani u bazu');
+                    try {
+                        await db.collection('bookings').add(formData);
+                        firebaseSaved = true;
+                        console.log('Podaci sačuvani u Firebase');
+                    } catch (fbError) {
+                        console.error('Firebase greška:', fbError);
+                        showCustomAlert('Greška pri čuvanju u bazu podataka', 'error');
+                    }
                 }
                 
                 // Send email notification if EmailJS is connected
                 if (emailjsConnected) {
-                    await emailjs.send('service_sptattoo', 'template_sptattoo', {
-                        to_email: 'sp.tattoo20@gmail.com',
-                        from_name: formData.firstName + ' ' + formData.lastName,
-                        from_email: formData.email,
-                        phone: formData.phone,
-                        date: selectedDate,
-                        artist: formData.artist,
-                        session_type: formData.sessionType,
-                        description: formData.description
-                    });
-                    console.log('Email poslat');
-                } else {
-                    console.log('Demo režim - email nije poslat');
+                    try {
+                        await emailjs.send('service_sptattoo', 'template_sptattoo', {
+                            to_email: 'sp.tattoo20@gmail.com',
+                            from_name: formData.firstName + ' ' + formData.lastName,
+                            from_email: formData.email,
+                            phone: formData.phone,
+                            date: selectedDate,
+                            artist: formData.artist,
+                            session_type: formData.sessionType,
+                            description: formData.description
+                        });
+                        emailSent = true;
+                        console.log('Email poslat');
+                    } catch (emailError) {
+                        console.error('EmailJS greška:', emailError);
+                        showCustomAlert('Greška pri slanju email-a', 'error');
+                    }
                 }
                 
                 // Show success modal with appropriate message
                 const successMessage = document.getElementById('successMessage');
-                if (!firebaseConnected && !emailjsConnected) {
-                    successMessage.textContent = 'Demo režim: Forma je testirana uspešno! Za pravu funkcionalnost konfigurišite Firebase i EmailJS.';
-                } else if (!emailjsConnected) {
+                if (firebaseSaved && emailSent) {
+                    successMessage.textContent = 'Vaš zahtev za termin je uspešno poslat i sačuvan. Bićete obavešteni putem email-a o potvrdi termina.';
+                } else if (firebaseSaved && !emailjsConnected) {
                     successMessage.textContent = 'Zahtev je sačuvan! Email funkcionalnost nije konfigurirana - kontaktiraćemo vas telefonom.';
+                } else if (!firebaseConnected && !emailjsConnected) {
+                    successMessage.textContent = 'Demo režim: Forma je testirana uspešno! Za pravu funkcionalnost konfigurišite Firebase i EmailJS.';
                 } else {
-                    successMessage.textContent = 'Vaš zahtev za termin je uspešno poslat. Bićete obavešteni putem email-a o potvrdi termina.';
+                    successMessage.textContent = 'Zahtev je delimično obrađen. Molimo kontaktirajte nas direktno na sp.tattoo20@gmail.com';
                 }
+                
                 document.getElementById('successModal').classList.remove('hidden');
                 
                 // Reset form
@@ -612,22 +632,39 @@
                 loadBookings();
                 
             } catch (error) {
-                console.error('Greška:', error);
-                // Show success modal even if there's an error (for demo purposes)
-                document.getElementById('successModal').classList.remove('hidden');
-                
-                // Reset form
-                document.getElementById('bookingForm').reset();
-                document.getElementById('priceInfo').classList.add('hidden');
-                if (selectedDateElement) {
-                    selectedDateElement.classList.remove('ring-4', 'ring-yellow-400');
-                    selectedDateElement = null;
-                }
+                console.error('Opšta greška:', error);
+                showCustomAlert('Došlo je do neočekivane greške. Molimo pokušajte ponovo.', 'error');
+            } finally {
+                // Reset button state
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
             }
         });
 
         function closeModal() {
             document.getElementById('successModal').classList.add('hidden');
+        }
+
+        // Custom Alert Function
+        function showCustomAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `fixed top-4 left-1/2 transform -translate-x-1/2 z-50 p-4 rounded-lg shadow-lg max-w-md ${
+                type === 'error' ? 'bg-red-600' : type === 'success' ? 'bg-green-600' : 'bg-blue-600'
+            } text-white`;
+            alertDiv.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">✕</button>
+                </div>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentElement) {
+                    alertDiv.remove();
+                }
+            }, 5000);
         }
 
         // Admin Functions
@@ -642,8 +679,9 @@
                 document.getElementById('adminLogin').classList.add('hidden');
                 document.getElementById('adminDashboard').classList.remove('hidden');
                 loadPendingBookings();
+                showCustomAlert('Uspešno ste se prijavili!', 'success');
             } else {
-                alert('Neispravno korisničko ime ili šifra!');
+                showCustomAlert('Neispravno korisničko ime ili šifra!', 'error');
             }
         });
 
@@ -731,12 +769,12 @@
                     message: 'Vaš termin je potvrđen! Molimo uplatite depozit preko PayPal-a ili keš u studiju.'
                 });
                 
-                alert('Termin je potvrđen i email je poslat klijentu!');
+                showCustomAlert('Termin je potvrđen i email je poslat klijentu!', 'success');
                 loadPendingBookings();
                 loadBookings();
             } catch (error) {
                 console.error('Greška:', error);
-                alert('Došlo je do greške pri potvrđivanju termina.');
+                showCustomAlert('Došlo je do greške pri potvrđivanju termina.', 'error');
             }
         }
 
@@ -751,12 +789,12 @@
                     message: 'Nažalost, vaš zahtev za termin nije mogao biti prihvaćen. Molimo kontaktirajte nas za alternativne termine.'
                 });
                 
-                alert('Termin je odbačen i email je poslat klijentu!');
+                showCustomAlert('Termin je odbačen i email je poslat klijentu!', 'success');
                 loadPendingBookings();
                 loadBookings();
             } catch (error) {
                 console.error('Greška:', error);
-                alert('Došlo je do greške pri odbacivanju termina.');
+                showCustomAlert('Došlo je do greške pri odbacivanju termina.', 'error');
             }
         }
 
@@ -766,5 +804,5 @@
             console.log('SP Tattoo Ink website loaded successfully');
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e7bede5597d2f3',t:'MTc2MDQ1MTkyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e7d384831337eb',t:'MTc2MDQ1Mjc2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
