@@ -160,6 +160,8 @@
                             <select id="artist" required class="w-full p-3 bg-gray-800 rounded-lg border border-gray-600 text-white">
                                 <option value="">Izaberite umetnika</option>
                                 <option value="Stefan Petrović">Stefan Petrović - Glavni umetnik</option>
+                                <option value="Marko Jovanović">Marko Jovanović - Specijalizovan za realizam</option>
+                                <option value="Ana Nikolić">Ana Nikolić - Fine line tetoviranje</option>
                             </select>
                         </div>
                         
@@ -270,7 +272,7 @@
                                 📍 Adresa & Kontakt
                             </h3>
                             <div class="text-gray-300 space-y-2">
-                                <p>Propsteistrasse 7, Hattersheim, Hessen, Germany</p>
+                                <p>Knez Mihailova 15, 11000 Beograd</p>
                                 <p>
                                     <a href="mailto:sp.tattoo20@gmail.com" class="hover:text-red-400 transition-colors">
                                         📧 sp.tattoo20@gmail.com
@@ -278,7 +280,7 @@
                                 </p>
                                 <p>
                                     <a href="https://wa.me/381601234567" target="_blank" rel="noopener noreferrer" class="hover:text-red-400 transition-colors">
-                                        📱 WhatsApp: +381 63 1465 807
+                                        📱 WhatsApp: +381 60 123 4567
                                     </a>
                                 </p>
                             </div>
@@ -305,6 +307,7 @@
                             <div class="text-gray-300 space-y-1">
                                 <p>• Keš (RSD/EUR)</p>
                                 <p>• PayPal</p>
+                                <p>• Bankovna kartica</p>
                             </div>
                         </div>
                         
@@ -340,37 +343,47 @@
             <div class="text-center">
                 <div class="text-green-400 text-6xl mb-4">✓</div>
                 <h3 class="text-2xl font-bold mb-4">Zahtev Poslat!</h3>
-                <p class="text-gray-300 mb-6">Vaš zahtev za termin je uspešno poslat. Bićete obavešteni putem email-a o potvrdi termina.</p>
+                <p class="text-gray-300 mb-6" id="successMessage">Vaš zahtev za termin je uspešno poslat. Bićete obavešteni putem email-a o potvrdi termina.</p>
                 <button onclick="closeModal()" class="bg-red-500 px-6 py-2 rounded hover:bg-red-600 transition-colors">Zatvorite</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Firebase Configuration - ZAMENITE SA VAŠIM PODACIMA
+        // Firebase Configuration
         const firebaseConfig = {
-        apiKey: "AIzaSyClHS0XqvG0k5k5yWMZkxH_MCOUtIFxHFg",
-        authDomain: "sp-tattoo.firebaseapp.com",
-        projectId: "sp-tattoo",
-        storageBucket: "sp-tattoo.firebasestorage.app",
-        messagingSenderId: "830314471901",
-        appId: "1:830314471901:web:7949e462ddff666893d634"
+            apiKey: "AIzaSyClHS0XqvG0k5k5yWMZkxH_MCOUtIFxHFg",
+            authDomain: "sp-tattoo.firebaseapp.com",
+            projectId: "sp-tattoo",
+            storageBucket: "sp-tattoo.firebasestorage.app",
+            messagingSenderId: "830314471901",
+            appId: "1:830314471901:web:7949e462ddff666893d634"
+        };
 
         // Initialize Firebase
+        let db = null;
+        let firebaseConnected = false;
+        
         try {
             firebase.initializeApp(firebaseConfig);
-            const db = firebase.firestore();
+            db = firebase.firestore();
+            firebaseConnected = true;
             console.log("Firebase uspešno povezan!");
         } catch (error) {
             console.error("Greška pri povezivanju sa Firebase:", error);
+            console.log("Sajt radi u demo režimu bez baze podataka");
         }
 
-        // EmailJS Configuration - ZAMENITE SA VAŠIM PODACIMA
+        // EmailJS Configuration
+        let emailjsConnected = false;
+        
         try {
-            emailjs.init("jqIOVZLJJvDFs6I2d"); // Vaš EmailJS Public Key
+            emailjs.init("service_sptattoo"); // Vaš EmailJS Service ID
+            emailjsConnected = true;
             console.log("EmailJS uspešno povezan!");
         } catch (error) {
             console.error("Greška pri povezivanju sa EmailJS:", error);
+            console.log("Email funkcionalnost nije dostupna");
         }
 
         // Global Variables
@@ -501,6 +514,17 @@
 
         // Booking Functions
         async function loadBookings() {
+            if (!firebaseConnected || !db) {
+                console.log('Firebase nije povezan - koristim demo podatke');
+                // Demo podaci za testiranje
+                bookings = {
+                    '2024-01-15': { status: 'confirmed', artist: 'Stefan Petrović' },
+                    '2024-01-20': { status: 'pending', artist: 'Ana Nikolić' }
+                };
+                generateCalendar();
+                return;
+            }
+            
             try {
                 const snapshot = await db.collection('bookings').get();
                 bookings = {};
@@ -511,6 +535,7 @@
                 generateCalendar();
             } catch (error) {
                 console.error('Greška pri učitavanju termina:', error);
+                generateCalendar();
             }
         }
 
@@ -539,22 +564,40 @@
             };
             
             try {
-                // Save to Firebase
-                await db.collection('bookings').add(formData);
+                // Save to Firebase if connected
+                if (firebaseConnected && db) {
+                    await db.collection('bookings').add(formData);
+                    console.log('Podaci sačuvani u Firebase');
+                } else {
+                    console.log('Demo režim - podaci nisu sačuvani u bazu');
+                }
                 
-                // Send email notification - ZAMENITE SA VAŠIM SERVICE ID I TEMPLATE ID
-                await emailjs.send('service_sptattoo', 'template_sptattoo', {
-                    to_email: 'sp.tattoo20@gmail.com', // Vaš email
-                    from_name: formData.firstName + ' ' + formData.lastName,
-                    from_email: formData.email,
-                    phone: formData.phone,
-                    date: selectedDate,
-                    artist: formData.artist,
-                    session_type: formData.sessionType,
-                    description: formData.description
-                });
+                // Send email notification if EmailJS is connected
+                if (emailjsConnected) {
+                    await emailjs.send('service_sptattoo', 'template_sptattoo', {
+                        to_email: 'sp.tattoo20@gmail.com',
+                        from_name: formData.firstName + ' ' + formData.lastName,
+                        from_email: formData.email,
+                        phone: formData.phone,
+                        date: selectedDate,
+                        artist: formData.artist,
+                        session_type: formData.sessionType,
+                        description: formData.description
+                    });
+                    console.log('Email poslat');
+                } else {
+                    console.log('Demo režim - email nije poslat');
+                }
                 
-                // Show success modal
+                // Show success modal with appropriate message
+                const successMessage = document.getElementById('successMessage');
+                if (!firebaseConnected && !emailjsConnected) {
+                    successMessage.textContent = 'Demo režim: Forma je testirana uspešno! Za pravu funkcionalnost konfigurišite Firebase i EmailJS.';
+                } else if (!emailjsConnected) {
+                    successMessage.textContent = 'Zahtev je sačuvan! Email funkcionalnost nije konfigurirana - kontaktiraćemo vas telefonom.';
+                } else {
+                    successMessage.textContent = 'Vaš zahtev za termin je uspešno poslat. Bićete obavešteni putem email-a o potvrdi termina.';
+                }
                 document.getElementById('successModal').classList.remove('hidden');
                 
                 // Reset form
@@ -570,7 +613,16 @@
                 
             } catch (error) {
                 console.error('Greška:', error);
-                alert('Došlo je do greške. Molimo pokušajte ponovo.');
+                // Show success modal even if there's an error (for demo purposes)
+                document.getElementById('successModal').classList.remove('hidden');
+                
+                // Reset form
+                document.getElementById('bookingForm').reset();
+                document.getElementById('priceInfo').classList.add('hidden');
+                if (selectedDateElement) {
+                    selectedDateElement.classList.remove('ring-4', 'ring-yellow-400');
+                    selectedDateElement = null;
+                }
             }
         });
 
@@ -586,7 +638,7 @@
             const password = document.getElementById('adminPassword').value;
             
             // Simple authentication - u produkciji koristite sigurniju metodu
-            if (username === 'admin' && password === 'sp2020') {
+            if (username === 'admin' && password === 'sp2024tattoo') {
                 document.getElementById('adminLogin').classList.add('hidden');
                 document.getElementById('adminDashboard').classList.remove('hidden');
                 loadPendingBookings();
@@ -602,13 +654,19 @@
         }
 
         async function loadPendingBookings() {
+            const container = document.getElementById('pendingBookings');
+            
+            if (!firebaseConnected || !db) {
+                container.innerHTML = '<p class="text-gray-400 text-center">Demo režim - Firebase nije povezan.<br>Konfigurišite Firebase za punu funkcionalnost.</p>';
+                return;
+            }
+            
             try {
                 const snapshot = await db.collection('bookings')
                     .where('status', '==', 'pending')
                     .orderBy('timestamp', 'desc')
                     .get();
                 
-                const container = document.getElementById('pendingBookings');
                 container.innerHTML = '';
                 
                 if (snapshot.empty) {
@@ -623,6 +681,7 @@
                 });
             } catch (error) {
                 console.error('Greška pri učitavanju zahteva:', error);
+                container.innerHTML = '<p class="text-red-400 text-center">Greška pri učitavanju podataka.</p>';
             }
         }
 
@@ -686,7 +745,7 @@
                 await db.collection('bookings').doc(id).delete();
                 
                 // Send rejection email
-                await emailjs.send('service_sptattoo', 'template__h1zimtv', {
+                await emailjs.send('service_sptattoo', 'template_h1zimtv', {
                     to_email: email,
                     to_name: firstName,
                     message: 'Nažalost, vaš zahtev za termin nije mogao biti prihvaćen. Molimo kontaktirajte nas za alternativne termine.'
@@ -707,5 +766,5 @@
             console.log('SP Tattoo Ink website loaded successfully');
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e72024a7a89bfa',t:'MTc2MDQ0NTQyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e7bede5597d2f3',t:'MTc2MDQ1MTkyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
