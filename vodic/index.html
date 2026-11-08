@@ -3,242 +3,99 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vodič za zakazivanje – SP Tattoo Ink</title>
+<title>Kako zakazati termin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#0a0a0a; --card:#151515; --line:#2a2a2a; --text:#f3f3f3; --muted:#a3a3a3;
-    --red:#ef4444; --orange:#f97316; --green:#22c55e; --yellow:#eab308;
-  }
+  :root{--ink:#f4f1ea;--soft:rgba(244,241,234,.72);--bg:#0b0d12}
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}
-  .deck{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:16px;-webkit-overflow-scrolling:touch}
-  .slide{
-    flex:0 0 min(100%, 540px); aspect-ratio:4/5; scroll-snap-align:center;
-    container-type:inline-size; position:relative; overflow:hidden; border-radius:12px;
-    background:
-      radial-gradient(120% 70% at 100% 0%, rgba(239,68,68,.22), transparent 60%),
-      radial-gradient(90% 60% at 0% 100%, rgba(249,115,22,.16), transparent 60%),
-      var(--bg);
-  }
+  html,body{background:var(--bg);color:var(--ink)}
+  .deck{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:16px;-webkit-overflow-scrolling:touch}
+  .slide{flex:0 0 min(100%,540px);aspect-ratio:4/5;scroll-snap-align:center;container-type:inline-size;position:relative;overflow:hidden;background:var(--bg) center/cover no-repeat}
   body.export .deck{display:block;padding:0}
-  body.export .slide{width:1080px;flex:none;border-radius:0;margin:0}
-  .in{position:absolute;inset:0;padding:6.5cqw 7cqw 5.5cqw;display:flex;flex-direction:column}
-  .top{display:flex;justify-content:space-between;align-items:center;font-size:2.6cqw;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:700}
-  .brand{color:var(--text)} .brand b{color:var(--red)}
-  .num{font-family:Oswald;font-size:3cqw;color:var(--muted)}
-  .step{margin-top:5.5cqw;font-family:Oswald;font-weight:500;font-size:3.4cqw;letter-spacing:.18em;text-transform:uppercase;
-    background:linear-gradient(90deg,var(--red),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent}
-  h1,h2{font-family:Oswald;font-weight:700;text-transform:uppercase;line-height:1.02;letter-spacing:.01em}
-  h2{font-size:8.8cqw;margin-top:1.2cqw}
-  .lead{font-size:3.6cqw;line-height:1.4;color:#d4d4d4;margin-top:3cqw}
-  .list{list-style:none;margin-top:3.6cqw;display:flex;flex-direction:column;gap:1.8cqw}
-  .list li{display:flex;gap:3cqw;align-items:flex-start;font-size:3.4cqw;line-height:1.35;background:var(--card);border:1px solid var(--line);border-radius:2.2cqw;padding:2.4cqw 3cqw}
-  .list .ic{font-size:4.6cqw;line-height:1}
-  .list b{color:#fff}
-  .foot{margin-top:auto;padding-top:2.4cqw;display:flex;justify-content:space-between;align-items:center;font-size:2.9cqw;color:var(--muted)}
-  .swipe{font-weight:700;color:var(--text)} .swipe span{color:var(--orange)}
-  .grad{background:linear-gradient(90deg,var(--red),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .pill{display:inline-block;background:linear-gradient(90deg,var(--red),var(--orange));color:#fff;font-weight:800;border-radius:99px;padding:1.6cqw 4cqw;font-size:3.4cqw}
-  .url{font-family:Oswald;font-size:5.4cqw;margin-top:3.6cqw;padding:3cqw 4cqw;border:2px dashed var(--orange);border-radius:2.4cqw;text-align:center;letter-spacing:.02em}
-  /* cover */
-  .cover h1{font-size:15cqw;margin-top:auto}
-  .cover .sub{font-size:4.4cqw;color:#d4d4d4;margin-top:4cqw;line-height:1.4}
-  .cover .big{margin-top:7cqw;margin-bottom:6cqw}
-  .needle{position:absolute;right:-6cqw;top:16cqw;font-family:Oswald;font-weight:700;font-size:58cqw;line-height:.8;color:rgba(255,255,255,.035)}
-  /* calendar */
-  .legend{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4cqw;margin-top:4cqw}
-  .legend div{background:var(--card);border:1px solid var(--line);border-radius:2.4cqw;padding:3.4cqw 2cqw;text-align:center;font-size:3.3cqw;font-weight:700}
-  .dot{width:7cqw;height:7cqw;border-radius:1.6cqw;margin:0 auto 2cqw}
-  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:1.4cqw;margin-top:4cqw}
-  .cal i{aspect-ratio:1;border-radius:1.4cqw;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:3cqw;font-weight:700;background:#1d1d1d;color:#666}
-  .cal .a{background:rgba(34,197,94,.22);color:#86efac} .cal .p{background:rgba(234,179,8,.25);color:#fde047} .cal .b{background:rgba(239,68,68,.28);color:#fca5a5}
-  .cal .sel{outline:.6cqw solid #fff}
-  /* prices */
-  .prices{display:flex;flex-direction:column;gap:2.2cqw;margin-top:3.6cqw}
-  .price{display:grid;grid-template-columns:1fr auto;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:2.6cqw;padding:2.6cqw 3.6cqw}
-  .price h3{font-family:Oswald;font-size:4.8cqw;text-transform:uppercase;font-weight:700}
-  .price p{font-size:3.1cqw;color:var(--muted);margin-top:.6cqw}
-  .price .eur{text-align:right;font-family:Oswald;font-size:6.4cqw;font-weight:700}
-  .price .dep{display:block;font-family:Inter;font-size:2.9cqw;font-weight:700;color:var(--yellow);margin-top:.4cqw}
-  .note{font-size:3cqw;color:var(--muted);margin-top:2.6cqw;line-height:1.45}
-  /* deposit / cancel */
-  .rule{display:grid;grid-template-columns:21cqw 1fr;gap:3.4cqw;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:2.6cqw;padding:2.6cqw 3cqw}
-  .rule .t{font-family:Oswald;font-weight:700;text-align:center;font-size:5.4cqw;line-height:1;border-radius:2cqw;padding:2cqw 1cqw}
-  .rule .t small{display:block;white-space:nowrap;font-family:Inter;font-size:2.2cqw;font-weight:700;margin-top:1cqw;text-transform:uppercase;letter-spacing:.06em}
-  .rule p{font-size:3.3cqw;line-height:1.4} .rule p b{color:#fff}
-  .ok .t{background:rgba(34,197,94,.18);color:#86efac} .warn .t{background:rgba(234,179,8,.18);color:#fde047} .bad .t{background:rgba(239,68,68,.2);color:#fca5a5}
-  .rules{display:flex;flex-direction:column;gap:2cqw;margin-top:3.6cqw}
-  /* timeline */
-  .flow{margin-top:3.6cqw;display:flex;flex-direction:column;gap:0}
-  .flow div{display:grid;grid-template-columns:9cqw 1fr;gap:3cqw;align-items:start;padding-bottom:3.4cqw;position:relative}
-  .flow div:not(:last-child)::after{content:"";position:absolute;left:4.3cqw;top:9cqw;bottom:0;width:.5cqw;background:var(--line)}
-  .flow em{font-style:normal;width:9cqw;height:9cqw;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Oswald;font-weight:700;font-size:4cqw;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff}
-  .flow p{font-size:3.6cqw;line-height:1.4;padding-top:1.6cqw} .flow b{color:#fff}
-  /* contact */
-  .info{display:grid;grid-template-columns:1fr 1fr;gap:2cqw;margin-top:3.6cqw}
-  .info div{background:var(--card);border:1px solid var(--line);border-radius:2.4cqw;padding:2.8cqw 3.2cqw;font-size:3.1cqw;line-height:1.45;color:#d4d4d4}
-  .info h4{font-size:2.7cqw;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:1.4cqw}
-  .info .wide{grid-column:span 2}
+  body.export .slide{width:1080px;flex:none}
+  .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,9,12,.55) 0%,rgba(8,9,12,.78) 45%,rgba(8,9,12,.9) 100%)}
+  .in{position:absolute;inset:0;padding:11cqw 10cqw 9cqw;display:flex;flex-direction:column}
+  h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:14cqw;line-height:.95;letter-spacing:-.01em}
+  .no{font-family:Jost,sans-serif;font-weight:300;font-size:3.4cqw;letter-spacing:.3em;color:var(--soft);margin-bottom:4cqw}
+  p,li{font-family:Jost,sans-serif;font-weight:300;font-size:4.9cqw;line-height:1.38}
+  ul{list-style:none;margin-top:8cqw;display:flex;flex-direction:column;gap:4.4cqw}
+  li{padding-left:6cqw;position:relative}
+  li::before{content:"";position:absolute;left:0;top:.72em;width:3cqw;height:1px;background:var(--ink)}
+  .small{font-size:3.9cqw;color:var(--soft)}
+  .swipe{position:absolute;right:7cqw;bottom:6.5cqw;text-align:right}
+  .swipe img{width:23cqw;display:block;margin-left:auto}
+  .swipe span{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:7.4cqw;line-height:1}
+  .link{font-family:Jost,sans-serif;font-weight:400;font-size:5.6cqw;border-bottom:1px solid var(--soft);padding-bottom:1cqw;align-self:flex-start}
+  /* slide 2 */
+  .profil{background:var(--bg)}
+  .profil .top{position:absolute;left:0;right:0;top:0;height:69.3cqw;background:url(img/profil.jpg) top/100% auto no-repeat}
+  .profil .top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:14cqw;background:linear-gradient(transparent,var(--bg))}
+  .profil .txt{position:absolute;left:8cqw;right:8cqw;top:78cqw;text-align:center}
+  .profil .txt p{font-size:6.6cqw;line-height:1.3}
+  /* last */
+  .end .in{justify-content:flex-end;padding-bottom:12cqw}
+  .end .addr{margin-top:7cqw}
 </style>
 </head>
 <body>
 <div class="deck">
 
-<!-- 1 COVER -->
-<section class="slide cover"><div class="needle">SP</div><div class="in">
-  <div class="top"><span class="brand">SP <b>Tattoo</b> Ink</span><span class="num">01/11</span></div>
-  <h1>Kako da<br><span class="grad">zakažeš</span><br>termin</h1>
-  <p class="sub">Ceo postupak u 5 koraka + sve o kauciji,<br>otkazivanju i pripremi za tetoviranje.</p>
-  <div class="big"><span class="pill">Sačuvaj post 📌</span></div>
-  <div class="foot"><span>Vodič za zakazivanje</span><span class="swipe">Prevuci <span>→</span></span></div>
-</div></section>
+<section class="slide" style="background-image:url(img/naslovna.jpg)"></section>
 
-<!-- 2 IDEA -->
-<section class="slide"><div class="in">
-  <div class="top"><span class="brand">SP <b>Tattoo</b> Ink</span><span class="num">02/11</span></div>
-  <div class="step">Korak 1</div>
-  <h2>Pripremi<br>svoju ideju</h2>
-  <p class="lead">Pre zakazivanja razmisli šta želiš. Što više detalja, to precizniji termin i cena.</p>
-  <ul class="list">
-    <li><span class="ic">🎨</span><span><b>Motiv i stil</b> – šta želiš i kako treba da izgleda</span></li>
-    <li><span class="ic">📏</span><span><b>Veličina</b> – okvirno u centimetrima</span></li>
-    <li><span class="ic">📍</span><span><b>Mesto na telu</b> – ruka, noga, leđa…</span></li>
-    <li><span class="ic">🖼️</span><span><b>Referentne slike</b> – inspiracija koja ti se sviđa</span></li>
+<section class="slide profil">
+  <div class="top"></div>
+  <div class="txt">
+    <p>Link za zakazivanje nalaziš<br>u mom profilu i u opisu<br>ove objave</p>
+  </div>
+  <div class="swipe"><img src="img/strelica.png" alt=""><span>Prevuci</span></div>
+</section>
+
+<section class="slide" style="background-image:url(img/studio.jpg);background-position:50% 20%"><div class="shade"></div><div class="in">
+  <div class="no">01</div>
+  <h2>Zakazivanje</h2>
+  <ul>
+    <li>Otvori link i izaberi slobodan datum.</li>
+    <li>Opiši ideju: motiv, veličinu i mesto na telu.</li>
+    <li>Pošalji i referentne slike ako ih imaš.</li>
+    <li>Potvrdu termina dobijaš na email.</li>
   </ul>
-  <div class="foot"><span>Konsultacije su <b style="color:#fff">besplatne</b> 💬</span><span class="swipe">Prevuci <span>→</span></span></div>
-</div></section>
+</div><div class="swipe"><img src="img/strelica.png" alt=""><span>Prevuci</span></div></section>
 
-<!-- 3 SITE -->
-<section class="slide"><div class="in">
-  <div class="top"><span class="brand">SP <b>Tattoo</b> Ink</span><span class="num">03/11</span></div>
-  <div class="step">Korak 2</div>
-  <h2>Otvori naš<br>sajt za booking</h2>
-  <p class="lead">Termine zakazujemo <b style="color:#fff">online</b> – brzo, jednostavno i bilo kad, 0–24h.</p>
-  <div class="url">sp-tattoo-ink.github.io</div>
-  <ul class="list">
-    <li><span class="ic">🔗</span><span>Link je u <b>biografiji (bio)</b> našeg profila</span></li>
-    <li><span class="ic">🗓️</span><span>Klikni na dugme <b>„Zakažite termin“</b></span></li>
+<section class="slide" style="background-image:url(img/studio.jpg);background-position:50% 100%"><div class="shade"></div><div class="in">
+  <div class="no">02</div>
+  <h2>Kaucija</h2>
+  <ul>
+    <li>Termin je rezervisan tek kada uplatiš kauciju.</li>
+    <li>Kauciju uplaćuješ u roku od 48h od potvrde.</li>
+    <li>Ceo iznos kaucije se oduzima od cene tetovaže.</li>
   </ul>
-  <div class="foot"><span>Radi na telefonu i računaru</span><span class="swipe">Prevuci <span>→</span></span></div>
-</div></section>
+</div><div class="swipe"><img src="img/strelica.png" alt=""><span>Prevuci</span></div></section>
 
-<!-- 4 CALENDAR -->
-<section class="slide"><div class="in">
-  <div class="top"><span class="brand">SP <b>Tattoo</b> Ink</span><span class="num">04/11</span></div>
-  <div class="step">Korak 3</div>
-  <h2>Izaberi datum<br>u kalendaru</h2>
-  <p class="lead">Boje ti odmah pokazuju koji su dani slobodni. Klikni na <b style="color:#86efac">zeleni</b> dan.</p>
-  <div class="cal">
-    <i>1</i><i class="a">2</i><i class="b">3</i><i class="a">4</i><i class="p">5</i><i class="a">6</i><i>7</i>
-    <i class="b">8</i><i class="a sel">9</i><i class="a">10</i><i class="b">11</i><i class="a">12</i><i class="p">13</i><i>14</i>
-  </div>
-  <div class="legend">
-    <div><div class="dot" style="background:var(--green)"></div>Dostupno</div>
-    <div><div class="dot" style="background:var(--yellow)"></div>Na čekanju</div>
-    <div><div class="dot" style="background:var(--red)"></div>Zauzeto</div>
-  </div>
-  <div class="foot"><span>Nedeljom ne radimo</span><span class="swipe">Prevuci <span>→</span></span></div>
-</div></section>
-
-<!-- 5 PRICES -->
-<section class="slide"><div class="in">
-  <div class="top"><span class="brand">SP <b>Tattoo</b> Ink</span><span class="num">05/11</span></div>
-  <div class="step">Korak 4</div>
-  <h2>Izaberi<br>tip termina</h2>
-  <div class="prices">
-    <div class="price"><div><h3>Small tattoo</h3><p>Manji motivi, natpisi, sitni detalji</p></div><div class="eur">150€<span class="dep">kaucija 100€</span></div></div>
-    <div class="price"><div><h3>Half day · 3h</h3><p>Srednji radovi, veći detalji</p></div><div class="eur">300€<span class="dep">kaucija 150€</span></div></div>
-    <div class="price"><div><h3>Full day · 6h</h3><p>Veliki radovi, rukavi, leđa</p></div><div class="eur">600€<span class="dep">kaucija 250€</span></div></div>
-  </div>
-  <p class="note">Ne znaš koji tip ti treba? Piši nam u DM 💬</p>
-  <div class="foot"><span>Kaucija ulazi u cenu</span><span class="swipe">Prevuci <span>→</span></span></div>
-</div></section>
-
-<!-- 6 FORM -->
-<section class="slide"><div class="in">
-  <div class="top"><span class="brand">SP <b>Tattoo</b> Ink</span><span class="num">06/11</span></div>
-  <div class="step">Korak 5</div>
-  <h2>Pošalji zahtev<br>i čekaj potvrdu</h2>
-  <div class="flow">
-    <div><em>1</em><p>Upiši <b>ime, telefon i email</b> i ukratko opiši tetovažu.</p></div>
-    <div><em>2</em><p>Klikni <b>„Pošaljite zahtev za termin“</b> – dan postaje <b style="color:#fde047">žut (na čekanju)</b>.</p></div>
-    <div><em>3</em><p>Pregledamo zahtev i šaljemo ti <b>potvrdu na email</b>.</p></div>
-    <div><em>4</em><p>Uplatiš <b>kauciju</b> – i termin je <b style="color:#86efac">zvanično tvoj</b> ✅</p></div>
-  </div>
-  <div class="foot"><span>Proveri i spam folder 📩</span><span class="swipe">Prevuci <span>→</span></span></div>
-</div></section>
-
-<!-- 7 DEPOSIT -->
-<section class="slide"><div class="in">
-  <div class="top"><span class="brand">SP <b>Tattoo</b> Ink</span><span class="num">07/11</span></div>
-  <div class="step">Važno</div>
-  <h2>Sve o<br><span class="grad">kauciji</span> 💰</h2>
-  <ul class="list">
-    <li><span class="ic">🔒</span><span>Kaucija <b>čuva tvoj termin</b> – bez nje termin nije potvrđen.</span></li>
-    <li><span class="ic">⏳</span><span>Uplati je u roku od <b>48h od potvrde</b>, inače se termin oslobađa.</span></li>
-    <li><span class="ic">💳</span><span>Plaćanje: <b>PayPal ili keš</b> u studiju.</span></li>
-    <li><span class="ic">➖</span><span>Kaucija se <b>oduzima od ukupne cene</b> – na dan termina plaćaš samo ostatak.</span></li>
+<section class="slide" style="background-image:url(img/studio.jpg);background-size:150%;background-position:70% 35%"><div class="shade"></div><div class="in">
+  <div class="no">03</div>
+  <h2>Otkazivanje</h2>
+  <ul>
+    <li>Javi mi najkasnije 48h pre termina i pomeramo ga, kaucija ostaje važeća.</li>
+    <li>Ako otkažeš kasnije ili ne dođeš, kaucija se ne vraća.</li>
   </ul>
-  <div class="foot"><span>Primer: 300€ − 150€ = ostatak 150€</span><span class="swipe">Prevuci <span>→</span></span></div>
-</div></section>
+</div><div class="swipe"><img src="img/strelica.png" alt=""><span>Prevuci</span></div></section>
 
-<!-- 8 CANCEL -->
-<section class="slide"><div class="in">
-  <div class="top"><span class="brand">SP <b>Tattoo</b> Ink</span><span class="num">08/11</span></div>
-  <div class="step">Pravila</div>
-  <h2>Otkazivanje<br><span style="font-size:.6em">i pomeranje termina</span></h2>
-  <div class="rules">
-    <div class="rule ok"><div class="t">48h+<small>pre termina</small></div><p>Kaucija se <b>prenosi na novi termin</b> (1 pomeranje besplatno).</p></div>
-    <div class="rule warn"><div class="t">&lt;48h<small>pre termina</small></div><p>Kaucija se <b>ne vraća</b>, za novi termin uplaćuješ novu.</p></div>
-    <div class="rule bad"><div class="t">✕<small>ne dođeš</small></div><p>Nedolazak bez javljanja – kaucija <b>propada</b>.</p></div>
-  </div>
-  <p class="note">⏰ Kašnjenje 30+ min = otkazan termin. Ako mi otkažemo – kaucija ti se vraća u celosti.</p>
-  <div class="foot"><span>Otkazivanje: email ili DM</span><span class="swipe">Prevuci <span>→</span></span></div>
-</div></section>
-
-<!-- 9 PREP -->
-<section class="slide"><div class="in">
-  <div class="top"><span class="brand">SP <b>Tattoo</b> Ink</span><span class="num">09/11</span></div>
-  <div class="step">Pre termina</div>
-  <h2>Kako da se<br>pripremiš</h2>
-  <ul class="list">
-    <li><span class="ic">😴</span><span><b>Naspavaj se</b> i dođi odmoran</span></li>
-    <li><span class="ic">🍝</span><span><b>Jedi pre termina</b> – nikad ne dolazi gladan</span></li>
-    <li><span class="ic">🚫</span><span><b>Bez alkohola 24h</b> pre – razređuje krv</span></li>
-    <li><span class="ic">💧</span><span><b>Pij dosta vode</b> i hidriraj kožu par dana pre</span></li>
-    <li><span class="ic">👕</span><span><b>Udobna odeća</b> koja otkriva mesto tetoviranja</span></li>
+<section class="slide" style="background-image:url(img/studio.jpg);background-size:170%;background-position:40% 92%"><div class="shade"></div><div class="in">
+  <div class="no">04</div>
+  <h2>Pre termina</h2>
+  <ul>
+    <li>Naspavaj se i dobro jedi pre dolaska.</li>
+    <li>Bez alkohola dan pre tetoviranja.</li>
+    <li>Ponesi ličnu kartu, tetoviram samo 18+.</li>
   </ul>
-  <div class="foot"><span>Ne sunčaj to mesto pre termina ☀️</span><span class="swipe">Prevuci <span>→</span></span></div>
-</div></section>
+</div><div class="swipe"><img src="img/strelica.png" alt=""><span>Prevuci</span></div></section>
 
-<!-- 10 GOOD TO KNOW -->
-<section class="slide"><div class="in">
-  <div class="top"><span class="brand">SP <b>Tattoo</b> Ink</span><span class="num">10/11</span></div>
-  <div class="step">Dobro je znati</div>
-  <h2>Na dan<br>termina</h2>
-  <ul class="list">
-    <li><span class="ic">🪪</span><span>Tetoviramo samo <b>punoletne (18+)</b> – ponesi ličnu kartu.</span></li>
-    <li><span class="ic">🤒</span><span>Bolestan si? <b>Javi nam</b> – pomerićemo termin.</span></li>
-    <li><span class="ic">👥</span><span>Dođi sam ili sa <b>najviše 1 pratiocem</b>.</span></li>
-    <li><span class="ic">✏️</span><span>Skicu dorađujemo zajedno <b>pre početka</b> rada.</span></li>
-    <li><span class="ic">🧴</span><span>Posle tetoviranja dobijaš <b>uputstvo za negu</b>.</span></li>
-  </ul>
-  <div class="foot"><span>Sterilni uslovi · profi oprema</span><span class="swipe">Prevuci <span>→</span></span></div>
-</div></section>
-
-<!-- 11 CTA -->
-<section class="slide cover"><div class="needle">SP</div><div class="in">
-  <div class="top"><span class="brand">SP <b>Tattoo</b> Ink</span><span class="num">11/11</span></div>
-  <h2 style="font-size:11.5cqw;margin-top:auto">Spreman?<br><span class="grad">Zakaži</span> sada</h2>
-  <div class="url">sp-tattoo-ink.github.io</div>
-  <div class="info">
-    <div><h4>Radno vreme</h4>Pon–Pet 10–20h<br>Sub 10–18h<br>Ned zatvoreno</div>
-    <div><h4>Adresa</h4>Knez Mihailova 15<br>11000 Beograd</div>
-    <div class="wide"><h4>Kontakt</h4>📧 sp.tattoo20@gmail.com<br>📱 WhatsApp: +381 60 123 4567<br>💬 Ili nam piši u DM</div>
-  </div>
-  <div class="foot" style="margin-top:4cqw"><span>Link u bio 🔗</span><span class="swipe">Podeli sa drugom 🖤</span></div>
+<section class="slide end" style="background-image:url(img/studio.jpg);background-position:50% 0%"><div class="shade"></div><div class="in">
+  <h2>Vidimo se<br>u studiju</h2>
+  <p style="margin-top:6cqw">Imaš pitanje? Piši mi u DM.</p>
+  <p class="addr small">Frankfurter Straße 79, Neu Isenburg</p>
+  <p class="link" style="margin-top:5cqw">unq99.com/booking</p>
 </div></section>
 
 </div>
